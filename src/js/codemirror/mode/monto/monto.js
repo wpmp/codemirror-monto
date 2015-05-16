@@ -13,6 +13,26 @@
 
     CodeMirror.defineMode("monto", function () {
         var editor = $('.CodeMirror')[0].CodeMirror;
+
+        MontoCommunicator.onmessage = function (e) {
+            console.log(e.data);
+        };
+
+        editor.on('change', function (cm, change) {
+            MontoCommunicator.Contents = editor.getValue();
+            var version = {
+                "source" : MontoCommunicator.FileName,
+                "version_id" : MontoCommunicator.VersionId,
+                "language" : MontoCommunicator.Language,
+                "invalid" : MontoCommunicator.Invalid,
+                "contents" : MontoCommunicator.Contents,
+                "selections" : MontoCommunicator.Selection
+            }
+            console.log(version);
+            MontoCommunicator.postMessage(version);
+            MontoCommunicator.VersionId += 1;
+        });
+
         return {
             startState: function () {
                 return {tokenize: null};
@@ -30,3 +50,20 @@
         };
     });
 });
+
+var MontoCommunicator = (function () {
+    if (!!window.Worker) {
+        var scripts = document.getElementsByTagName("script");
+        var path = scripts[scripts.length - 1].src.replace(/\/monto\.js$/, '/');
+        var communicator = new Worker(path + "communicator.js");
+        communicator.FileName = "nofile";
+        communicator.Language = "java";
+        communicator.Invalid = [];
+        communicator.VersionId = 0;
+        communicator.Contents = "";
+        communicator.Selection = [];
+        return communicator;
+    } else {
+        alert("Your browser does not support web workers so monto plugin won't work.")
+    }
+})();

@@ -14,31 +14,15 @@
     <script type="text/javascript" src="js/codemirror/addon/hint/show-hint.js"></script>
     <script type="text/javascript" src="js/codemirror/addon/hint/monto-hint.js"></script>
     <script type="text/javascript" src="js/codemirror/mode/monto/monto.js"></script>
+    <script type="text/javascript" src="js/editor.js"></script>
 </head>
 <body>
-<textarea id="editor">
-function myScript(){
-    return 100;
-}
-var a =
-</textarea>
-
-<script type="text/javascript">
-    var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("editor"), {
-        extraKeys: {
-            "Ctrl-Space": "autocomplete",
-            "F11": function (cm) {
-                cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-            },
-            "Esc": function (cm) {
-                if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
-            }
-        },
-        lineNumbers: true,
-        mode: "monto",
-        theme: "monokai"
-    });
-    myCodeMirror.setOption("fullScreen", !myCodeMirror.getOption("fullScreen"));
-</script>
+Click in the editor field and press F11 for Fullscreen mode and press ESC to disable it.
+<br />
+<!--<button id="newFile">New file</button>-->
+<input type="file" id="loadFile" name="files[]" />
+<!--<button id="saveFile">Save file</button>-->
+<button id="fullscreen">Fullscreen</button>
+<textarea id="editor"></textarea>
 </body>
 </html>
