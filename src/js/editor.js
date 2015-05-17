@@ -24,7 +24,8 @@ window.onload = function () {
             if (file.type.match('image.*')) {
                 return;
             }
-            MontoCommunicator.FileName='/'+file.name;
+            MontoCommunicator.FileName = '/'+file.name;
+            MontoCommunicator.VersionId = 0;
             editor.setValue("");
             var reader = new FileReader();
             reader.onload = function(){
