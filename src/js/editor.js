@@ -11,7 +11,7 @@ window.onload = function () {
         },
         lineNumbers: true,
         mode: "monto",
-        theme: "monokai"
+        theme: "monto"
     });
 
     //$('#newFile').change(function (e) {
@@ -24,8 +24,9 @@ window.onload = function () {
             if (file.type.match('image.*')) {
                 return;
             }
-            MontoCommunicator.FileName = '/'+file.name;
-            MontoCommunicator.VersionId = 0;
+            // TODO
+            //MontoHandler.source = '/'+file.name;
+            //MontoHandler.version_id = 0;
             editor.setValue("");
             var reader = new FileReader();
             reader.onload = function(){

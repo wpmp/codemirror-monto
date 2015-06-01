@@ -1,69 +1,90 @@
 (function (mod) {
-    if (typeof exports == "object" && typeof module == "object") // CommonJS
-        mod(require("../../lib/codemirror"));
-    else if (typeof define == "function" && define.amd) // AMD
-        define(["../../lib/codemirror"], mod);
+    if (typeof exports == 'object' && typeof module == 'object') // CommonJS
+        mod(require('../../lib/codemirror'));
+    else if (typeof define == 'function' && define.amd) // AMD
+        define(['../../lib/codemirror'], mod);
     else // Plain browser env
         mod(CodeMirror);
 })(function (CodeMirror) {
-    "use strict";
+    'use strict';
 
-    var TOKENS = "atom number property keyword string variable variable-2 def bracket tag link error";
-    var TOKEN_LIST = TOKENS.split(' ');
+    CodeMirror.defineMode('monto', function () {
+        var src = new WebSocket('ws://localhost:5000/', ['soap', 'xmpp']);
+        var sink = new WebSocket('ws://localhost:5001/', ['soap', 'xmpp']);
 
-    CodeMirror.defineMode("monto", function () {
+        // get instance of editor
         var editor = $('.CodeMirror')[0].CodeMirror;
-
-        MontoCommunicator.onmessage = function (e) {
-            console.log(e.data);
+        var lineSizes = [];
+        var product = {
+            version_id: -1
+        };
+        var markers = [];
+        var cursor;
+        var message = {
+            source: 'nofile',
+            version_id: 0,
+            language: 'javascript',
+            invalid: [],
+            contents: '',
+            selections: []
         };
 
-        editor.on('change', function (cm, change) {
-            MontoCommunicator.Contents = editor.getValue();
-            var version = {
-                "source" : MontoCommunicator.FileName,
-                "version_id" : MontoCommunicator.VersionId,
-                "language" : MontoCommunicator.Language,
-                "invalid" : MontoCommunicator.Invalid,
-                "contents" : MontoCommunicator.Contents,
-                "selections" : MontoCommunicator.Selection
+        sink.onmessage = function (e) {
+            var newProduct = JSON.parse(e.data);
+            if (newProduct.product === 'tokens' && newProduct.version_id > product.version_id) {
+                product = newProduct;
+                editor.operation(function () {
+                    markers.forEach(function (marker) {
+                        marker.clear();
+                    });
+                    var contents = JSON.parse(product.contents);
+                    var content;
+                    var line = 0;
+                    var offset = 0;
+                    var lineReduction = 0;
+                    for (var i = 0; i < contents.length; i++) {
+                        content = contents[i];
+                        offset = content.offset - lineReduction;
+                        if (lineSizes[line] < offset) {
+                            lineReduction += offset;
+                            offset = 0;
+                            line++;
+                        }
+                        markers.push(editor.markText({line: line, ch: offset}, {
+                            line: line,
+                            ch: offset + content.length
+                        }, {className: 'cm-' + content.category}));
+                    }
+                });
             }
-            console.log(version);
-            MontoCommunicator.postMessage(version);
-            MontoCommunicator.VersionId += 1;
+        };
+
+        editor.on('cursorActivity', function (cm) {
+            cursor = cm.getCursor();
+        });
+
+        editor.on('change', function (cm, change) {
+            if (typeof change !== 'undefined') {
+                setLineSizes(cm);
+                message.contents = cm.getValue();
+                src.send(JSON.stringify(message));
+                message.version_id += 1;
+            }
         });
 
         return {
-            startState: function () {
-                return {tokenize: null};
-            },
-            token: function (stream, state) {
-                var curLine = editor.getCursor().line;
-                var ch;
-                if (stream.eatSpace()) return null;
-                while (ch = stream.next()) {
-                    var token_name = TOKEN_LIST[Math.floor(Math.random() * TOKEN_LIST.length - 1)];
-                    return token_name;
-                }
-                return null;
+            token: function (stream) {
+                stream.skipToEnd();
+                return "";
             }
         };
+
+        function setLineSizes(cm) {
+            var lines = cm.getValue().split('\n');
+            lineSizes = [];
+            lines.forEach(function (line) {
+                lineSizes.push(line.length);
+            });
+        }
     });
 });
-
-var MontoCommunicator = (function () {
-    if (!!window.Worker) {
-        var scripts = document.getElementsByTagName("script");
-        var path = scripts[scripts.length - 1].src.replace(/\/monto\.js$/, '/');
-        var communicator = new Worker(path + "communicator.js");
-        communicator.FileName = "nofile";
-        communicator.Language = "java";
-        communicator.Invalid = [];
-        communicator.VersionId = 0;
-        communicator.Contents = "";
-        communicator.Selection = [];
-        return communicator;
-    } else {
-        alert("Your browser does not support web workers so monto plugin won't work.")
-    }
-})();
