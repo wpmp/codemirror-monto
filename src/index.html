@@ -3,12 +3,15 @@
 <head>
     <title>CodeMirror</title>
 
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/codemirror/lib/codemirror.css">
     <link rel="stylesheet" type="text/css" href="css/codemirror/addon/display/fullscreen.css">
     <link rel="stylesheet" type="text/css" href="css/codemirror/addon/hint/show-hint.css">
-    <link rel="stylesheet" type="text/css" href="css/codemirror/theme/monto.css">
+    <link rel="stylesheet" type="text/css" href="css/codemirror/theme/monto-light.css">
+    <link rel="stylesheet" type="text/css" href="css/editor.css">
 
     <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/codemirror/lib/codemirror.js"></script>
     <script type="text/javascript" src="js/codemirror/addon/display/fullscreen.js"></script>
     <script type="text/javascript" src="js/codemirror/addon/hint/show-hint.js"></script>
@@ -17,12 +20,30 @@
     <script type="text/javascript" src="js/editor.js"></script>
 </head>
 <body>
-Click in the editor field and press F11 for Fullscreen mode and press ESC to disable it.
-<br />
-<!--<button id="newFile">New file</button>-->
-<input type="file" id="loadFile" name="files[]" />
-<!--<button id="saveFile">Save file</button>-->
-<button id="fullscreen">Fullscreen</button>
-<textarea id="editor"></textarea>
+<div class="cm-s-monto ide-background">
+    <!--<button id="new" class="btn btn-default">New file</button>-->
+    <button id="load" class="btn btn-default">Load File</button>
+    <!--<button id="save" class="btn btn-default">Save file</button>-->
+    <button id="fullscreen" class="btn btn-default">Fullscreen</button>
+
+    <div class="hiddenDiv">
+        <input type="file" id="fileInput" name="files[]"/>
+    </div>
+
+    <div class="row">
+        <div class="col-md-10">
+            <textarea id="editor"></textarea>
+        </div>
+        <div class="col-md-2">
+            <div class="panel panel-default cm-s-monto CodeMirror">
+                <div class="panel-heading">
+                    Outline
+                </div>
+                <div id="outline" class="panel-body">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

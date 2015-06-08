@@ -10,15 +10,20 @@ window.onload = function () {
             }
         },
         lineNumbers: true,
+        viewportMargin: Infinity,
         mode: "monto",
         theme: "monto"
     });
 
-    //$('#newFile').change(function (e) {
-    //
-    //});
+    $('#fullscreen').click(function () {
+        editor.setOption("fullScreen", !editor.getOption("fullScreen"));
+    });
 
-    $('#loadFile').change(function (e) {
+    $('#load').click(function (){
+        $('#fileInput').trigger("click");
+    })
+
+    $('#fileInput').change(function (e) {
         if (window.File && window.FileReader && window.FileList && window.Blob) {
             var file = e.target.files[0];
             if (file.type.match('image.*')) {
@@ -35,13 +40,9 @@ window.onload = function () {
                 editor.setValue(cmContent + text);
             };
             reader.readAsText(file);
-            editor.setOption("fullScreen", !editor.getOption("fullScreen"));
+            //editor.setOption("fullScreen", !editor.getOption("fullScreen"));
         } else {
             alert('The File APIs are not fully supported in this browser.');
         }
-    });
-
-    $('#fullscreen').click(function () {
-        editor.setOption("fullScreen", !editor.getOption("fullScreen"));
     });
 };
