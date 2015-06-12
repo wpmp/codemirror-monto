@@ -1,26 +1,38 @@
 window.onload = function () {
-    var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+    var editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
         extraKeys: {
-            "Ctrl-Space": "autocomplete",
-            "F11": function (cm) {
-                cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+            'Ctrl-Space': 'autocomplete',
+            'F11': function (cm) {
+                cm.setOption('fullScreen', !cm.getOption('fullScreen'));
             },
-            "Esc": function (cm) {
-                if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+            'Esc': function (cm) {
+                if (cm.getOption('fullScreen')) cm.setOption('fullScreen', false);
+            },
+            'Ctrl-L': function (cm) {
+                $('#fileInput').trigger('click');
             }
         },
         lineNumbers: true,
         viewportMargin: Infinity,
-        mode: "monto",
-        theme: "monto"
+        mode: 'monto',
+        theme: 'monto'
     });
+    CodeMirror.commands.save = function() {
+        saveTextAs(editor.getValue(), 'monto.js');
+    }
+    Monto.setCM(editor);
 
     $('#fullscreen').click(function () {
-        editor.setOption("fullScreen", !editor.getOption("fullScreen"));
+        editor.setOption('fullScreen', !editor.getOption('fullScreen'));
     });
 
+    $('#save').click(function() {
+        // TODO
+        saveTextAs(editor.getValue(), 'monto.js');
+    })
+
     $('#load').click(function (){
-        $('#fileInput').trigger("click");
+        $('#fileInput').trigger('click');
     })
 
     $('#fileInput').change(function (e) {
@@ -29,10 +41,9 @@ window.onload = function () {
             if (file.type.match('image.*')) {
                 return;
             }
-            // TODO
-            //MontoHandler.source = '/'+file.name;
-            //MontoHandler.version_id = 0;
-            editor.setValue("");
+            Monto.getMessage().source = '/'+file.name;
+            Monto.getMessage().version_id = 0;
+            editor.setValue('');
             var reader = new FileReader();
             reader.onload = function(){
                 var text = reader.result;
@@ -40,7 +51,6 @@ window.onload = function () {
                 editor.setValue(cmContent + text);
             };
             reader.readAsText(file);
-            //editor.setOption("fullScreen", !editor.getOption("fullScreen"));
         } else {
             alert('The File APIs are not fully supported in this browser.');
         }
