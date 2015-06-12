@@ -84,8 +84,8 @@ var Monto = (function () {
     //    alert("Your browser does not support web workers so monto plugin won't work.")
     //}
     var cm = {};
-    var src = new WebSocket('ws://localhost:5000/', ['soap', 'xmpp']);
-    var sink = new WebSocket('ws://localhost:5001/', ['soap', 'xmpp']);
+    var src = new WebSocket('ws://localhost:5000/');
+    var sink = new WebSocket('ws://localhost:5001/');
     var lineSizes = [];
     var receiveEvents = [];
     var message = {
