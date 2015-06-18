@@ -1,7 +1,7 @@
 /* Based on solarized colors */
 
 .cm-s-monto.CodeMirror {background: #fbfbfb; color: #002b36;}
-.cm-s-monto div.CodeMirror-selected {background: #fbfbfb !important;}
+.cm-s-monto div.CodeMirror-selected {background: #bfbfbf !important;}
 .cm-s-monto.CodeMirror ::selection { background: rgba(73, 72, 62, .99); }
 .cm-s-monto.CodeMirror ::-moz-selection { background: rgba(73, 72, 62, .99); }
 .cm-s-monto .CodeMirror-gutters {background: #fbfbfb; border-right: 0;}

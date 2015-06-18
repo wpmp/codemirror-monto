@@ -1,79 +1,3 @@
-(function (mod) {
-    if (typeof exports == 'object' && typeof module == 'object') // CommonJS
-        mod(require('../../lib/codemirror'));
-    else if (typeof define == 'function' && define.amd) // AMD
-        define(['../../lib/codemirror'], mod);
-    else // Plain browser env
-        mod(CodeMirror);
-})(function (CodeMirror) {
-    'use strict';
-
-    CodeMirror.defineMode('monto', function () {
-        // get instance of editor
-        var editor = $('.CodeMirror')[0].CodeMirror;
-        var markers = [];
-        var cursor;
-
-        editor.on('cursorActivity', function (cm) {
-            // always keep track of the current cursor position
-            cursor = cm.getCursor();
-        });
-
-        editor.on('change', function (cm, change) {
-            Monto.refreshLineSizes();
-            Monto.getMessage().contents = cm.getValue();
-            Monto.send();
-        });
-
-        Monto.registerOnReceive(function (newProduct) {
-            console.log(newProduct);
-            if (newProduct.product === 'tokens' && newProduct.version_id > Monto.getTokens().version_id) {
-                Monto.setTokens(newProduct);
-                editor.operation(function () {
-                    markers.forEach(function (marker) {
-                        marker.clear();
-                    });
-                    var contents = JSON.parse(Monto.getTokens().contents);
-                    var line = 0;
-                    var offset = 0;
-                    var lineReduction = 0;
-                    contents.forEach(function (content) {
-                        var pos = Monto.convertMontoToCMPosWithLength({offset: content.offset, length: content.length});
-                        markers.push(editor.markText({line: pos.from.line, ch: pos.from.ch}, {
-                            line: pos.to.line,
-                            ch: pos.to.ch
-                        }, {className: 'cm-' + content.category}));
-                    });
-                });
-            } else if (newProduct.product === 'outline' && newProduct.version_id > Monto.getOutline().version_id) {
-                Monto.setOutline(newProduct);
-                var contents = JSON.parse(newProduct.contents);
-                $('#outline').html(refreshOutline(contents.children));
-            }
-        });
-
-        function refreshOutline(children) {
-            if (typeof children === 'undefined' || children === null) {
-                return '';
-            }
-            var outline = '<ul class="outline" compact="compact" list-style="none">';
-            children.forEach(function (child) {
-                var pos = Monto.convertMontoToCMPosWithLength(child.identifier)
-                outline += '<li>' + editor.getRange(pos.from, pos.to) + '</li>' + refreshOutline(child.children);
-            });
-            outline += '</ul>';
-            return outline;
-        }
-
-        return {
-            token: function (stream) {
-                stream.skipToEnd();
-                return '';
-            }
-        };
-    });
-});
-
 var Monto = (function () {
     //if (!!window.Worker) {
     //    // get path to workerscript
@@ -129,6 +53,18 @@ var Monto = (function () {
         setMessage: function (value) {
             message = value;
         },
+        setMessageSource: function (value) {
+            message.source = value;
+        },
+        setMessageLanguage: function (value) {
+            message.language = value;
+        },
+        setMessageContents: function (value) {
+            message.contents = value;
+        },
+        setMessageSelection: function (value) {
+            message.selections = value;
+        },
         getTokens: function () {
             return tokens;
         },
@@ -160,9 +96,13 @@ var Monto = (function () {
             cm = value;
         },
         send: function () {
+            console.log(JSON.stringify(message));
             src.send(JSON.stringify(message));
             message.version_id += 1;
             message.selections = [];
+        },
+        setPosAndSend: function() {
+
         },
         registerOnReceive: function (func) {
             receiveEvents.push(func)
@@ -171,7 +111,7 @@ var Monto = (function () {
             //converts positions from  {offset, length} to {{line, ch},{line,ch}}
             var chCount = 0;
             for (var i = 0; i < lineSizes.length; i++) {
-                if (pos.offset < chCount + lineSizes[i]) {
+                if (pos.offset < chCount + lineSizes[i] + 1) {
                     return {
                         from: {line: i, ch: pos.offset - chCount},
                         to: {line: i, ch: pos.offset - chCount + pos.length}
@@ -181,9 +121,20 @@ var Monto = (function () {
                 chCount += lineSizes[i] + 1;
             }
         },
+        convertMontoToCMPos: function (offset) {
+            //converts positions from  offset to {line, ch}
+            var chCount = 0;
+            for (var i = 0; i < lineSizes.length; i++) {
+                if (offset < chCount + lineSizes[i] + 1) {
+                    return {line: i, ch: offset - chCount};
+                }
+                //TODO +1 because of missing \n count ???
+                chCount += lineSizes[i] + 1;
+            }
+        },
         convertCMToMontoPos: function (pos) {
             //converts positions from  {line, ch} to offset
-            var chCount = 0;
+            var chCount = -1;
             for (var i = 0; i <= pos.line; i++) {
                 var lineSize = lineSizes[i];
                 if (i === pos.line) {
@@ -191,6 +142,7 @@ var Monto = (function () {
                 } else {
                     chCount += lineSize;
                 }
+                chCount += 1;
             }
             return chCount;
         },
