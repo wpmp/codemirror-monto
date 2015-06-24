@@ -7,7 +7,6 @@ var Monto = (function () {
     //} else {
     //    alert("Your browser does not support web workers so monto plugin won't work.")
     //}
-    var cm = {};
     var src = new WebSocket('ws://localhost:5000/');
     var sink = new WebSocket('ws://localhost:5001/');
     var lineSizes = [];
@@ -33,8 +32,25 @@ var Monto = (function () {
         version_id: -1
     };
 
+    function toPreString(content) {
+        return '<pre>' + JSON.stringify(content, null, 2).replace('<', '&lt').replace('>', '&gt') + '</pre>';
+    }
+
     sink.onmessage = function (e) {
-        var product = JSON.parse(e.data)
+        var product = JSON.parse(e.data);
+        if (product.product === 'tokens' && (product.source !== tokens.source || product.version_id > tokens.version_id)) {
+            tokens = product;
+            $('#tab-tokens').html(toPreString(product));
+        } else if (product.product === 'ast' && (product.source !== ast.source || product.version_id > ast.version_id)) {
+            ast = product;
+            $('#tab-ast').html(toPreString(product));
+        } else if (product.product === 'outline' && (product.source !== outline.source || product.version_id > outline.version_id)) {
+            outline = product;
+            $('#tab-outline').html(toPreString(product));
+        } else if (product.product === 'completions' && (product.source !== codecompletion.source || product.version_id > codecompletion.version_id)) {
+            codecompletion = product;
+            $('#tab-codecompletion').html(toPreString(product));
+        }
         receiveEvents.forEach(function (event) {
             event(product);
         });
@@ -65,6 +81,9 @@ var Monto = (function () {
         setMessageSelection: function (value) {
             message.selections = value;
         },
+        setMessageVersionId: function (value) {
+            message.version_id = value;
+        },
         getTokens: function () {
             return tokens;
         },
@@ -89,20 +108,17 @@ var Monto = (function () {
         setCodecompletion: function (value) {
             codecompletion = value;
         },
-        getCM: function () {
-            return cm;
-        },
-        setCM: function (value) {
-            cm = value;
-        },
         send: function () {
-            console.log(JSON.stringify(message));
             src.send(JSON.stringify(message));
+            $('#tab-version').html(toPreString(message));
             message.version_id += 1;
             message.selections = [];
         },
         setPosAndSend: function() {
-
+            var editor = $('.CodeMirror')[0].CodeMirror;
+            var pos = Monto.convertCMToMontoPos(editor.getCursor());
+            Monto.setMessageSelection([{end: pos, begin: pos}]);
+            Monto.send();
         },
         registerOnReceive: function (func) {
             receiveEvents.push(func)
@@ -146,8 +162,8 @@ var Monto = (function () {
             }
             return chCount;
         },
-        refreshLineSizes: function () {
-            var lines = cm.getValue().split('\n');
+        refreshLineSizes: function (content) {
+            var lines = content.split('\n');
             lineSizes = [];
             lines.forEach(function (line) {
                 lineSizes.push(line.length);

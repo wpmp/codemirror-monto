@@ -20,23 +20,18 @@
         });
 
         editor.on('change', function (cm, change) {
-            Monto.refreshLineSizes();
+            Monto.refreshLineSizes(cm.getValue());
             Monto.setMessageContents(cm.getValue());
             Monto.send();
         });
 
         Monto.registerOnReceive(function (newProduct) {
-            console.log(newProduct);
-            if (newProduct.product === 'tokens' && newProduct.version_id > Monto.getTokens().version_id) {
-                Monto.setTokens(newProduct);
+            if (newProduct.product === 'tokens') {
                 editor.operation(function () {
                     markers.forEach(function (marker) {
                         marker.clear();
                     });
                     var contents = JSON.parse(Monto.getTokens().contents);
-                    var line = 0;
-                    var offset = 0;
-                    var lineReduction = 0;
                     contents.forEach(function (content) {
                         var pos = Monto.convertMontoToCMPosWithLength({offset: content.offset, length: content.length});
                         markers.push(editor.markText({line: pos.from.line, ch: pos.from.ch}, {
@@ -45,12 +40,11 @@
                         }, {className: 'cm-' + content.category}));
                     });
                 });
-            } else if (newProduct.product === 'outline' && newProduct.version_id > Monto.getOutline().version_id) {
-                Monto.setOutline(newProduct);
-                var contents = JSON.parse(newProduct.contents);
-                $('#outline').jstree().destroy();
-                $('#outline').html(refreshOutline(contents.children));
-                $('#outline').jstree({
+            } else if (newProduct.product === 'outline') {
+                var outline = $('#outline');
+                outline.jstree().destroy();
+                outline.html(refreshOutline(JSON.parse(newProduct.contents).children));
+                outline.jstree({
                     'core': {
                         'themes': {
                             'icons': false

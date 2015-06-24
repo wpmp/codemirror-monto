@@ -6,12 +6,3 @@
 .hiddenDiv {
     visibility: hidden;
 }
-
-#outline {
-    /*overflow: scroll;*/
-    /*overflow-y: hidden;*/
-}
-
-.outline {
-    /*margin: 0px;*/
-}

@@ -11,12 +11,12 @@
 .cm-s-monto .CodeMirror-cursor {border-left: 1px solid #002b36 !important;}
 
 .cm-s-monto span.cm-comment {color: #002b36;}
-.cm-s-monto span.cm-constant {color: #d33682;}
-.cm-s-monto span.cm-string {color: #d33682;}
-.cm-s-monto span.cm-character {color: #d33682;}
-.cm-s-monto span.cm-number {color: #d33682;}
-.cm-s-monto span.cm-float {color: #d33682;}
-.cm-s-monto span.cm-boolean {color: #d33682;}
+.cm-s-monto span.cm-constant {color: #dc322f;}
+.cm-s-monto span.cm-string {color: #dc322f;}
+.cm-s-monto span.cm-character {color: #dc322f;}
+.cm-s-monto span.cm-number {color: #dc322f;}
+.cm-s-monto span.cm-float {color: #dc322f;}
+.cm-s-monto span.cm-boolean {color: #dc322f;}
 .cm-s-monto span.cm-identifier {color: #586e75;}
 .cm-s-monto span.cm-statement {color: #2aa198;}
 .cm-s-monto span.cm-conditional {color: #268bd2;}
@@ -32,7 +32,7 @@
 .cm-s-monto span.cm-parenthesis {color: #839496;}
 .cm-s-monto span.cm-delimiter {color: #839496;}
 .cm-s-monto span.cm-meta {color: #657b83;}
-.cm-s-monto span.cm-unknown {color: #dc322f; background: #93a1a1}
+.cm-s-monto span.cm-unknown {color: #cb4b16; background: #93a1a1}
 
 .cm-s-monto .CodeMirror-activeline-background {background: #93a1a1 !important;}
 .cm-s-monto .CodeMirror-matchingbracket {
