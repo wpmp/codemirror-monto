@@ -23,31 +23,22 @@ window.onload = function () {
     function save() {
         saveTextAs(editor.getValue(), Monto.getMessage().source);
     }
-    CodeMirror.commands.save = function () {
-        save();
-    };
-    $('#save').click(function () {
-        save();
-    });
+    CodeMirror.commands.save = save;
+    $('#save').on('click', save);
 
     $('#outline').jstree();
 
-    $('#fullscreen').click(function () {
-        editor.setOption('fullScreen', !editor.getOption('fullScreen'));
-    });
+    $('#fullscreen').on('click', editor.setOption('fullScreen', !editor.getOption('fullScreen')));
 
-    $('#load').click(function () {
-        $('#fileInput').trigger('click');
-    });
+    $('#load').on('click', $('#fileInput').trigger('click'));
 
-    $('#fileInput').change(function (e) {
+    $('#fileInput').on('change', function (e) {
         if (window.File && window.FileReader && window.FileList && window.Blob) {
             var file = e.target.files[0];
             if (file.type.match('image.*')) {
                 return;
             }
-            var oldSource = Monto.getMessage().source;
-            if (oldSource !== file.name) {
+            if (Monto.getMessage().source !== file.name) {
                 Monto.setMessageSource(file.name);
                 Monto.setMessageVersionId(0);
             }
@@ -63,7 +54,7 @@ window.onload = function () {
         }
     });
 
-    $('#tabs a').click(function (e) {
+    $('#tabs a').on('click', function (e) {
         e.preventDefault();
         $(this).tab('show');
     })

@@ -15,7 +15,7 @@ var Monto = (function () {
         source: 'nofile',
         version_id: 0,
         language: 'javascript',
-        invalid: [],
+        //invalid: [],
         contents: '',
         selections: []
     };
@@ -32,7 +32,7 @@ var Monto = (function () {
         version_id: -1
     };
 
-    function toPreString(content) {
+    function toHtmlString(content) {
         return '<pre>' + JSON.stringify(content, null, 2).replace('<', '&lt').replace('>', '&gt') + '</pre>';
     }
 
@@ -40,16 +40,16 @@ var Monto = (function () {
         var product = JSON.parse(e.data);
         if (product.product === 'tokens' && (product.source !== tokens.source || product.version_id > tokens.version_id)) {
             tokens = product;
-            $('#tab-tokens').html(toPreString(product));
+            $('#tab-tokens').html(toHtmlString(product));
         } else if (product.product === 'ast' && (product.source !== ast.source || product.version_id > ast.version_id)) {
             ast = product;
-            $('#tab-ast').html(toPreString(product));
+            $('#tab-ast').html(toHtmlString(product));
         } else if (product.product === 'outline' && (product.source !== outline.source || product.version_id > outline.version_id)) {
             outline = product;
-            $('#tab-outline').html(toPreString(product));
+            $('#tab-outline').html(toHtmlString(product));
         } else if (product.product === 'completions' && (product.source !== codecompletion.source || product.version_id > codecompletion.version_id)) {
             codecompletion = product;
-            $('#tab-codecompletion').html(toPreString(product));
+            $('#tab-codecompletion').html(toHtmlString(product));
         }
         receiveEvents.forEach(function (event) {
             event(product);
@@ -110,7 +110,7 @@ var Monto = (function () {
         },
         send: function () {
             src.send(JSON.stringify(message));
-            $('#tab-version').html(toPreString(message));
+            $('#tab-version').html(toHtmlString(message));
             message.version_id += 1;
             message.selections = [];
         },
@@ -120,7 +120,7 @@ var Monto = (function () {
             Monto.setMessageSelection([{end: pos, begin: pos}]);
             Monto.send();
         },
-        registerOnReceive: function (func) {
+        subscribeOnReceive: function (func) {
             receiveEvents.push(func)
         },
         convertMontoToCMPosWithLength: function (pos) {

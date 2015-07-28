@@ -25,7 +25,7 @@
             Monto.send();
         });
 
-        Monto.registerOnReceive(function (newProduct) {
+        Monto.subscribeOnReceive(function (newProduct) {
             if (newProduct.product === 'tokens') {
                 editor.operation(function () {
                     markers.forEach(function (marker) {

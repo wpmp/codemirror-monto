@@ -8,7 +8,7 @@
 })(function (CodeMirror) {
     "use strict";
 
-    Monto.registerOnReceive(function (newProduct) {
+    Monto.subscribeOnReceive(function (newProduct) {
         if (newProduct.product === 'completions') {
             CodeMirror.commands.autocomplete($('.CodeMirror')[0].CodeMirror);
         }
