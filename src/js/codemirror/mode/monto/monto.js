@@ -20,20 +20,20 @@
         });
 
         editor.on('change', function (cm, change) {
-            Monto.refreshLineSizes(cm.getValue());
-            Monto.setMessageContents(cm.getValue());
-            Monto.send();
+            Source.refreshLineSizes(cm.getValue());
+            Source.setMessageContents(cm.getValue());
+            Source.send();
         });
 
-        Monto.subscribeOnReceive(function (newProduct) {
+        Sink.subscribeOnReceive(function (newProduct) {
             if (newProduct.product === 'tokens') {
                 editor.operation(function () {
                     markers.forEach(function (marker) {
                         marker.clear();
                     });
-                    var contents = JSON.parse(Monto.getTokens().contents);
+                    var contents = JSON.parse(Sink.getTokens().contents);
                     contents.forEach(function (content) {
-                        var pos = Monto.convertMontoToCMPosWithLength({offset: content.offset, length: content.length});
+                        var pos = Source.convertMontoToCMPosWithLength({offset: content.offset, length: content.length});
                         markers.push(editor.markText({line: pos.from.line, ch: pos.from.ch}, {
                             line: pos.to.line,
                             ch: pos.to.ch
@@ -60,7 +60,7 @@
             }
             var outline = '<ul class="outline" compact list-style="none">';
             children.forEach(function (child) {
-                var pos = Monto.convertMontoToCMPosWithLength(child.identifier)
+                var pos = Source.convertMontoToCMPosWithLength(child.identifier)
                 outline += '<li>' + editor.getRange(pos.from, pos.to) + refreshOutline(child.children) + '</li>';
             });
             outline += '</ul>';

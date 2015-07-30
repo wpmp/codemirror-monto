@@ -10,7 +10,7 @@ Install instructions
    and follow the installation instructions
 2. Get the [services] (https://github.com/monto-editor) of your choice
 3. Run the broker and the services
-4. (Optional) In the `src/js/codemirror/mode/monto/montoObject.js` in `Monto.message.language` set the language of the service you want to use. Right now this doesn't matter
+4. (Optional) In the `src/js/monto/source.js` in `message.language` set the language of the service you want to use. Right now this doesn't matter
 5. Open `index.html` with the browser of your choice
 6. Start coding
 

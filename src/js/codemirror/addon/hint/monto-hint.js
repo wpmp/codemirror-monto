@@ -8,7 +8,7 @@
 })(function (CodeMirror) {
     "use strict";
 
-    Monto.subscribeOnReceive(function (newProduct) {
+    Sink.subscribeOnReceive(function (newProduct) {
         if (newProduct.product === 'completions') {
             CodeMirror.commands.autocomplete($('.CodeMirror')[0].CodeMirror);
         }
@@ -16,9 +16,9 @@
 
     CodeMirror.registerHelper('hint', 'monto', function (editor, options) {
         var list = [];
-        var contents = JSON.parse(Monto.getCodecompletion().contents);
+        var contents = JSON.parse(Sink.getCodecompletion().contents);
         var replacementLength = contents[0].description.split(' ')[1].length - contents[0].replacement.length;
-        var pos = Monto.convertMontoToCMPosWithLength({offset: contents[0].insertionOffset - replacementLength, length: replacementLength});
+        var pos = Source.convertMontoToCMPosWithLength({offset: contents[0].insertionOffset - replacementLength, length: replacementLength});
         contents.forEach(function (content) {
             list.push(content.description.split(' ')[1]);
         });

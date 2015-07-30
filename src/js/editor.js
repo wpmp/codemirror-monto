@@ -2,7 +2,7 @@ window.onload = function () {
     var editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
         extraKeys: {
             'Ctrl-Space': function () {
-                Monto.setPosAndSend()
+                Source.setPosAndSend()
             },
             'F11': function (cm) {
                 cm.setOption('fullScreen', !cm.getOption('fullScreen'));
@@ -21,16 +21,16 @@ window.onload = function () {
     });
 
     function save() {
-        saveTextAs(editor.getValue(), Monto.getMessage().source);
+        saveTextAs(editor.getValue(), Source.getMessage().source);
     }
     CodeMirror.commands.save = save;
     $('#save').on('click', save);
 
     $('#outline').jstree();
 
-    $('#fullscreen').on('click', editor.setOption('fullScreen', !editor.getOption('fullScreen')));
+    $('#fullscreen').on('click', function() {editor.setOption('fullScreen', !editor.getOption('fullScreen'))});
 
-    $('#load').on('click', $('#fileInput').trigger('click'));
+    $('#load').on('click', function () {$('#fileInput').trigger('click')});
 
     $('#fileInput').on('change', function (e) {
         if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -38,9 +38,9 @@ window.onload = function () {
             if (file.type.match('image.*')) {
                 return;
             }
-            if (Monto.getMessage().source !== file.name) {
-                Monto.setMessageSource(file.name);
-                Monto.setMessageVersionId(0);
+            if (Source.getMessage().source !== file.name) {
+                Source.setMessageSource(file.name);
+                Source.setMessageVersionId(0);
             }
             var reader = new FileReader();
             reader.onload = function () {
