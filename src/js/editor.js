@@ -17,7 +17,9 @@ window.onload = function () {
         lineNumbers: true,
         viewportMargin: Infinity,
         mode: 'monto',
-        theme: 'monto'
+        theme: 'monto',
+        gutters: ["CodeMirror-lint-markers"],
+        lint: true
     });
 
     function save() {
