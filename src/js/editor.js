@@ -25,14 +25,25 @@ window.onload = function () {
     function save() {
         saveTextAs(editor.getValue(), Source.getMessage().source);
     }
+
     CodeMirror.commands.save = save;
     $('#save').on('click', save);
 
-    $('#outline').jstree();
+    //$('#outline').jstree({
+    //    'core': {
+    //        'themes': {
+    //            'icons': false
+    //        }
+    //    }
+    //});
 
-    $('#fullscreen').on('click', function() {editor.setOption('fullScreen', !editor.getOption('fullScreen'))});
+    $('#fullscreen').on('click', function () {
+        editor.setOption('fullScreen', !editor.getOption('fullScreen'))
+    });
 
-    $('#load').on('click', function () {$('#fileInput').trigger('click')});
+    $('#load').on('click', function () {
+        $('#fileInput').trigger('click')
+    });
 
     $('#fileInput').on('change', function (e) {
         if (window.File && window.FileReader && window.FileList && window.Blob) {

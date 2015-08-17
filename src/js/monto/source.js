@@ -1,5 +1,5 @@
 var Source = (function () {
-    var src = new WebSocket('ws://localhost:5000/');
+    var src = new WebSocket('ws://localhost:5002/');
     var lineSizes = [];
 
     var message = {

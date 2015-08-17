@@ -1,5 +1,5 @@
 var Sink = (function () {
-    var sink = new WebSocket('ws://localhost:5001/');
+    var sink = new WebSocket('ws://localhost:5003/');
     var receiveEvents = [];
 
     var tokens = {

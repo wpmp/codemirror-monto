@@ -33,7 +33,10 @@
                     });
                     var contents = JSON.parse(Sink.getTokens().contents);
                     contents.forEach(function (content) {
-                        var pos = Source.convertMontoToCMPosWithLength({offset: content.offset, length: content.length});
+                        var pos = Source.convertMontoToCMPosWithLength({
+                            offset: content.offset,
+                            length: content.length
+                        });
                         markers.push(editor.markText({line: pos.from.line, ch: pos.from.ch}, {
                             line: pos.to.line,
                             ch: pos.to.ch
@@ -41,16 +44,17 @@
                     });
                 });
             } else if (newProduct.product === 'outline') {
+                //TODO PERFORMANCE!!!!!!!!!!!
                 var outline = $('#outline');
-                outline.jstree().destroy();
+                //outline.jstree().destroy();
                 outline.html(refreshOutline(JSON.parse(newProduct.contents).children));
-                outline.jstree({
-                    'core': {
-                        'themes': {
-                            'icons': false
-                        }
-                    }
-                });
+                //outline.jstree({
+                //    'core': {
+                //        'themes': {
+                //            'icons': false
+                //        }
+                //    }
+                //});
             }
         });
 
@@ -60,7 +64,7 @@
             }
             var outline = '<ul class="outline" compact list-style="none">';
             children.forEach(function (child) {
-                var pos = Source.convertMontoToCMPosWithLength(child.identifier)
+                var pos = Source.convertMontoToCMPosWithLength(child.identifier);
                 outline += '<li>' + editor.getRange(pos.from, pos.to) + refreshOutline(child.children) + '</li>';
             });
             outline += '</ul>';
