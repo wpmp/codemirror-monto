@@ -5,7 +5,7 @@ var Source = (function () {
     var versionMsg = {
         source: 'nofile',
         version_id: 0,
-        language: 'javascript',
+        language: localStorage.getItem('programmingLanguage'),
         //invalid: [],
         contents: '',
         selections: []
@@ -13,10 +13,10 @@ var Source = (function () {
 
     var discoverReq = [
         {
-            service_id: "yay"
+            service_id: "test"
         },
         {
-            language: "ui"
+            language: "test123"
         }
     ];
 

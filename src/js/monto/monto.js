@@ -1,8 +1,8 @@
 (function (mod) {
     if (typeof exports == 'object' && typeof module == 'object') // CommonJS
-        mod(require('../codemirror/lib/codemirror'));
+        mod(require('../../lib/codemirror'));
     else if (typeof define == 'function' && define.amd) // AMD
-        define(['../codemirror/lib/codemirror'], mod);
+        define(['../../lib/codemirror'], mod);
     else // Plain browser env
         mod(CodeMirror);
 })(function (CodeMirror) {
@@ -25,7 +25,7 @@
             Source.send();
         });
 
-        Sink.subscribeOnReceive(function (newProduct) {
+        Sink.registerFunctionOnReceive(function (newProduct) {
             if (newProduct.product === 'tokens') {
                 editor.operation(function () {
                     markers.forEach(function (marker) {
@@ -62,7 +62,7 @@
             if (typeof children === 'undefined' || children === null) {
                 return '';
             }
-            var outline = '<ul class="outline" compact list-style="none">';
+            var outline = '<ul class="outline" compact>';
             children.forEach(function (child) {
                 var pos = Source.convertMontoToCMPosWithLength(child.identifier);
                 outline += '<li>' + editor.getRange(pos.from, pos.to) + refreshOutline(child.children) + '</li>';

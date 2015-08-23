@@ -8,7 +8,7 @@
 })(function (CodeMirror) {
     "use strict";
 
-    Sink.subscribeOnReceive(function (newProduct) {
+    Sink.registerFunctionOnReceive(function (newProduct) {
         if (newProduct.product === 'errors') {
             $('.CodeMirror')[0].CodeMirror.performLint();
         }

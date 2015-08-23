@@ -4,7 +4,9 @@
     <title>CodeMirror Monto</title>
 
     <link rel="stylesheet" type="text/css" href="css/jstree/style.min.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/awesome-bootstrap-checkbox.css">
     <link rel="stylesheet" type="text/css" href="css/codemirror/lib/codemirror.css">
     <link rel="stylesheet" type="text/css" href="css/codemirror/addon/display/fullscreen.css">
     <link rel="stylesheet" type="text/css" href="css/codemirror/addon/hint/show-hint.css">
@@ -33,22 +35,9 @@
     <button id="load" class="btn btn-default">Load File</button>
     <button id="save" class="btn btn-default">Save file</button>
     <button id="fullscreen" class="btn btn-default">Fullscreen (F11)</button>
-    <button id="discover" class="btn btn-default">Discover</button>
 
     <div class="hiddenDiv">
         <input type="file" id="fileInput" name="files[]"/>
-    </div>
-
-    <div class="row">
-        <div class="col-md-6">
-            <div class="panel panel-default cm-s-monto">
-                <div class="panel-heading">
-                    Discovery
-                </div>
-                <div id="discovery" class="panel-body">
-                </div>
-            </div>
-        </div>
     </div>
 
     <div class="row">
@@ -56,6 +45,7 @@
             <div>
                 <ul id="tabs" class="nav nav-tabs">
                     <li role="presentation" class="active"><a href="#tab-editor">Editor</a></li>
+                    <li role="presentation"><a href="#tab-options">Options</a></li>
                     <li role="presentation"><a href="#tab-version">Version</a></li>
                     <li role="presentation"><a href="#tab-tokens">Tokens</a></li>
                     <li role="presentation"><a href="#tab-ast">AST</a></li>
@@ -67,6 +57,25 @@
                 <div class="tab-content">
                     <div role="tabpanel" id="tab-editor" class="tab-pane active">
                         <textarea id="editor"></textarea>
+                    </div>
+                    <div role="tabpanel" id="tab-options" class="tab-pane">
+                        <br />
+                        <div>
+                            <button id="discover" class="btn btn-default">Discover</button>
+                        </div>
+                        <br />
+                        <div class="input-group">
+                            <span class="input-group-addon">Programming Language:</span>
+                            <input type="text" class="form-control" id="programmingLanguage" >
+                        </div>
+                        <br />
+                        <div class="panel panel-default cm-s-monto">
+                            <div class="panel-heading">
+                                Services
+                            </div>
+                            <div id="discovery" class="panel-body">
+                            </div>
+                        </div>
                     </div>
                     <div role="tabpanel" id="tab-version" class="tab-pane"></div>
                     <div role="tabpanel" id="tab-tokens" class="tab-pane"></div>

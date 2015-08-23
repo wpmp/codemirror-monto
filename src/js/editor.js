@@ -74,5 +74,25 @@ window.onload = function () {
     $('#tabs a').on('click', function (e) {
         e.preventDefault();
         $(this).tab('show');
-    })
+    });
+
+    $('body').on('change', '.discoverOption', function(e) {
+        if (this.checked) {
+            Sink.enableService(this.id);
+        } else {
+            Sink.disableService(this.id);
+        }
+    });
+
+    $('#programmingLanguage').val(localStorage.getItem("programmingLanguage"));
+    $('#programmingLanguage').on('input', function(e) {
+        var val = $('#programmingLanguage').val();
+        Source.setMessageLanguage(val);
+        localStorage.setItem("programmingLanguage", val);
+    });
+
+    setTimeout(function () {
+        //TODO probably make this more safe
+        $('#discover').trigger('click');
+    }, 100);
 };

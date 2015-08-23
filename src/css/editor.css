@@ -6,3 +6,7 @@
 .hiddenDiv {
     visibility: hidden;
 }
+
+.table tbody>tr>td.mid-align{
+    vertical-align: middle;
+}
