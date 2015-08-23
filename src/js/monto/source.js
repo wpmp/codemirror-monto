@@ -2,7 +2,7 @@ var Source = (function () {
     var src = new WebSocket('ws://localhost:5002/');
     var lineSizes = [];
 
-    var message = {
+    var versionMsg = {
         source: 'nofile',
         version_id: 0,
         language: 'javascript',
@@ -10,6 +10,15 @@ var Source = (function () {
         contents: '',
         selections: []
     };
+
+    var discoverReq = [
+        {
+            service_id: "yay"
+        },
+        {
+            language: "ui"
+        }
+    ];
 
     function toHtmlString(content) {
         return '<pre>' + JSON.stringify(content, null, 2).replace('<', '&lt').replace('>', '&gt') + '</pre>';
@@ -20,31 +29,34 @@ var Source = (function () {
             return lineSizes;
         },
         getMessage: function () {
-            return message;
+            return versionMsg;
         },
         setMessage: function (value) {
-            message = value;
+            versionMsg = value;
         },
         setMessageSource: function (value) {
-            message.source = value;
+            versionMsg.source = value;
         },
         setMessageLanguage: function (value) {
-            message.language = value;
+            versionMsg.language = value;
         },
         setMessageContents: function (value) {
-            message.contents = value;
+            versionMsg.contents = value;
         },
         setMessageSelection: function (value) {
-            message.selections = value;
+            versionMsg.selections = value;
         },
         setMessageVersionId: function (value) {
-            message.version_id = value;
+            versionMsg.version_id = value;
         },
         send: function () {
-            src.send(JSON.stringify(message));
-            $('#tab-version').html(toHtmlString(message));
-            message.version_id += 1;
-            message.selections = [];
+            src.send(JSON.stringify(versionMsg));
+            $('#tab-version').html(toHtmlString(versionMsg));
+            versionMsg.version_id += 1;
+            versionMsg.selections = [];
+        },
+        discoverServices: function () {
+            src.send(JSON.stringify(discoverReq));
         },
         setPosAndSend: function() {
             var editor = $('.CodeMirror')[0].CodeMirror;

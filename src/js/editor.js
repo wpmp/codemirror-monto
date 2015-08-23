@@ -45,6 +45,10 @@ window.onload = function () {
         $('#fileInput').trigger('click')
     });
 
+    $('#discover').on('click', function () {
+        Source.discoverServices();
+    });
+
     $('#fileInput').on('change', function (e) {
         if (window.File && window.FileReader && window.FileList && window.Blob) {
             var file = e.target.files[0];

@@ -33,9 +33,22 @@
     <button id="load" class="btn btn-default">Load File</button>
     <button id="save" class="btn btn-default">Save file</button>
     <button id="fullscreen" class="btn btn-default">Fullscreen (F11)</button>
+    <button id="discover" class="btn btn-default">Discover</button>
 
     <div class="hiddenDiv">
         <input type="file" id="fileInput" name="files[]"/>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default cm-s-monto">
+                <div class="panel-heading">
+                    Discovery
+                </div>
+                <div id="discovery" class="panel-body">
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row">
@@ -66,7 +79,7 @@
         </div>
 
         <div class="col-md-2">
-            <div class="panel panel-default cm-s-monto CodeMirror">
+            <div class="panel panel-default cm-s-monto">
                 <div class="panel-heading">
                     Outline
                 </div>

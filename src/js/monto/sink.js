@@ -24,25 +24,35 @@ var Sink = (function () {
 
     sink.onmessage = function (e) {
         var product = JSON.parse(e.data);
-        if (product.product === 'tokens' && (product.source !== tokens.source || product.version_id > tokens.version_id)) {
-            tokens = product;
-            $('#tab-tokens').html(toHtmlString(product));
-        } else if (product.product === 'ast' && (product.source !== ast.source || product.version_id > ast.version_id)) {
-            ast = product;
-            $('#tab-ast').html(toHtmlString(product));
-        } else if (product.product === 'outline' && (product.source !== outline.source || product.version_id > outline.version_id)) {
-            outline = product;
-            $('#tab-outline').html(toHtmlString(product));
-        } else if (product.product === 'completions' && (product.source !== codecompletion.source || product.version_id > codecompletion.version_id)) {
-            codecompletion = product;
-            $('#tab-codecompletion').html(toHtmlString(product));
-        } else if (product.product === 'errors' && (product.source !== errors.source || product.version_id > errors.version_id)) {
-            errors = product;
-            $('#tab-errors').html(toHtmlString(product));
+        if (product.product !== undefined) {
+            if (product.product === 'tokens' && (product.source !== tokens.source || product.version_id > tokens.version_id)) {
+                tokens = product;
+                $('#tab-tokens').html(toHtmlString(product));
+            } else if (product.product === 'ast' && (product.source !== ast.source || product.version_id > ast.version_id)) {
+                ast = product;
+                $('#tab-ast').html(toHtmlString(product));
+            } else if (product.product === 'outline' && (product.source !== outline.source || product.version_id > outline.version_id)) {
+                outline = product;
+                $('#tab-outline').html(toHtmlString(product));
+            } else if (product.product === 'completions' && (product.source !== codecompletion.source || product.version_id > codecompletion.version_id)) {
+                codecompletion = product;
+                $('#tab-codecompletion').html(toHtmlString(product));
+            } else if (product.product === 'errors' && (product.source !== errors.source || product.version_id > errors.version_id)) {
+                errors = product;
+                $('#tab-errors').html(toHtmlString(product));
+            }
+            receiveEvents.forEach(function (event) {
+                event(product);
+            });
+        } else {
+            var options = "";
+            product.forEach(function(e) {
+                   options +='<label class="checkbox-inline">' +
+                       '<input type="checkbox"> ' + e.service_id +
+                       '</label>';
+            });
+            $('#discovery').html(options);
         }
-        receiveEvents.forEach(function (event) {
-            event(product);
-        });
     };
 
     return {
