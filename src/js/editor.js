@@ -49,6 +49,10 @@ window.onload = function () {
         Source.discoverServices();
     });
 
+    $('#configure').on('click', function() {
+        Source.configureServices();
+    });
+
     $('#fileInput').on('change', function (e) {
         if (window.File && window.FileReader && window.FileList && window.Blob) {
             var file = e.target.files[0];
@@ -71,7 +75,7 @@ window.onload = function () {
         }
     });
 
-    $('#tabs a').on('click', function (e) {
+    $('#tabs').find('a').on('click', function (e) {
         e.preventDefault();
         $(this).tab('show');
     });
@@ -84,8 +88,8 @@ window.onload = function () {
         }
     });
 
-    $('#programmingLanguage').val(localStorage.getItem("programmingLanguage"));
-    $('#programmingLanguage').on('input', function(e) {
+    $('#programmingLanguage').val(localStorage.getItem("programmingLanguage"))
+        .on('input', function(e) {
         var val = $('#programmingLanguage').val();
         Source.setMessageLanguage(val);
         localStorage.setItem("programmingLanguage", val);

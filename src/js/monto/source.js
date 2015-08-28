@@ -13,15 +13,40 @@ var Source = (function () {
 
     var discoverReq = [
         {
-            service_id: "test"
+            service_id: 'test'
         },
         {
-            language: "test123"
+            language: 'test123'
+        }
+    ];
+
+    var configuration = [
+        {
+            service_id: 'ecmascriptOutliner',
+            configurations: [
+                {
+                    option_id: 'a',
+                    value: false
+                }
+            ]
         }
     ];
 
     function toHtmlString(content) {
         return '<pre>' + JSON.stringify(content, null, 2).replace('<', '&lt').replace('>', '&gt') + '</pre>';
+    }
+
+    function arrayToHtmlString(content) {
+        var copy = $.extend(true, [], content);
+        var string = '[';
+        copy.forEach(function (e) {
+            if (e.configurations !== undefined && e.options !== null) {
+                e.configurations = JSON.parse(e.configurations);
+            }
+            string += '\n' + JSON.stringify(e, null, 2);
+        });
+        string += '\n]';
+        return '<pre>' + string.replace('<', '&lt').replace('>', '&gt') + '</pre>';
     }
 
     return {
@@ -57,8 +82,17 @@ var Source = (function () {
         },
         discoverServices: function () {
             src.send(JSON.stringify(discoverReq));
+            $('#discoverRequest').html(toHtmlString(discoverReq));
         },
-        setPosAndSend: function() {
+        configureServices: function () {
+            var copy = $.extend(true, [], configuration);
+            copy.forEach(function (c) {
+                c.configurations = JSON.stringify(c.configurations);
+            });
+            src.send(JSON.stringify(copy));
+            $('#tab-configuration').html(arrayToHtmlString(copy));
+        },
+        setPosAndSend: function () {
             var editor = $('.CodeMirror')[0].CodeMirror;
             var pos = Source.convertCMToMontoPos(editor.getCursor());
             Source.setMessageSelection([{end: pos, begin: pos}]);
@@ -90,7 +124,10 @@ var Source = (function () {
             var chCount = 0;
             for (var i = 0; i < lineSizes.length; i++) {
                 if (offset < chCount + lineSizes[i] + 1) {
-                    return {line: i, ch: offset - chCount};
+                    return {
+                        line: i,
+                        ch: offset - chCount
+                    };
                 }
                 //TODO +1 because of missing \n count ???
                 chCount += lineSizes[i] + 1;

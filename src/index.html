@@ -33,22 +33,21 @@
     <script type="text/javascript" src="js/editor.js"></script>
 </head>
 <body>
-<div class="cm-s-monto ide-background">
-    <!--<button id="new" class="btn btn-default">New file</button>-->
-    <button id="load" class="btn btn-default">Load File</button>
-    <button id="save" class="btn btn-default">Save file</button>
-    <button id="fullscreen" class="btn btn-default">Fullscreen (F11)</button>
+<div class="cm-s-monto container-fluid">
+    <h3>Monto Web Editor</h3>
 
     <div class="hiddenDiv">
         <input type="file" id="fileInput" name="files[]"/>
     </div>
 
     <div class="row">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div>
                 <ul id="tabs" class="nav nav-tabs">
                     <li role="presentation" class="active"><a href="#tab-editor">Editor</a></li>
                     <li role="presentation"><a href="#tab-options">Options</a></li>
+                    <li role="presentation"><a href="#tab-discovery">Discovery</a></li>
+                    <li role="presentation"><a href="#tab-configuration">Configuration</a></li>
                     <li role="presentation"><a href="#tab-version">Version</a></li>
                     <li role="presentation"><a href="#tab-tokens">Tokens</a></li>
                     <li role="presentation"><a href="#tab-ast">AST</a></li>
@@ -59,19 +58,48 @@
 
                 <div class="tab-content">
                     <div role="tabpanel" id="tab-editor" class="tab-pane active">
-                        <textarea id="editor"></textarea>
+                        <br/>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <!--<button id="new" class="btn btn-primary">New file</button>-->
+                                <button id="load" class="btn btn-primary">Load File</button>
+                                <button id="save" class="btn btn-primary">Save file</button>
+                                <button id="fullscreen" class="btn btn-primary">Fullscreen (F11)</button>
+                            </div>
+                        </div>
+                        <br/>
+
+                        <div class="row">
+                            <div class="col-md-10">
+                                <textarea id="editor"></textarea>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="panel panel-default cm-s-monto">
+                                    <div class="panel-heading">
+                                        Outline
+                                    </div>
+                                    <div id="outline" class="panel-body">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div role="tabpanel" id="tab-options" class="tab-pane">
-                        <br />
+                        <br/>
+
                         <div>
-                            <button id="discover" class="btn btn-default">Discover</button>
+                            <button id="discover" class="btn btn-primary">Discover</button>
+                            <button id="configure" class="btn btn-primary">Configure</button>
                         </div>
-                        <br />
+                        <br/>
+
                         <div class="input-group">
                             <span class="input-group-addon">Programming Language:</span>
-                            <input type="text" class="form-control" id="programmingLanguage" >
+                            <input type="text" class="form-control" id="programmingLanguage">
                         </div>
-                        <br />
+                        <br/>
+
                         <div class="panel panel-default cm-s-monto">
                             <div class="panel-heading">
                                 Services
@@ -80,22 +108,29 @@
                             </div>
                         </div>
                     </div>
+                    <div role="tabpanel" id="tab-discovery" class="tab-pane">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <br />
+                                <div>Discover Request</div>
+                                <br />
+                                <div id="discoverRequest"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <br />
+                                <div>Discover Response</div>
+                                <br />
+                                <div id="discoverResponse"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" id="tab-configuration" class="tab-pane"></div>
                     <div role="tabpanel" id="tab-version" class="tab-pane"></div>
                     <div role="tabpanel" id="tab-tokens" class="tab-pane"></div>
                     <div role="tabpanel" id="tab-ast" class="tab-pane"></div>
                     <div role="tabpanel" id="tab-outline" class="tab-pane"></div>
                     <div role="tabpanel" id="tab-codecompletion" class="tab-pane"></div>
                     <div role="tabpanel" id="tab-errors" class="tab-pane"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-2">
-            <div class="panel panel-default cm-s-monto">
-                <div class="panel-heading">
-                    Outline
-                </div>
-                <div id="outline" class="panel-body">
                 </div>
             </div>
         </div>
