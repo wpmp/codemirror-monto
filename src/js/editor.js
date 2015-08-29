@@ -29,14 +29,6 @@ window.onload = function () {
     CodeMirror.commands.save = save;
     $('#save').on('click', save);
 
-    //$('#outline').jstree({
-    //    'core': {
-    //        'themes': {
-    //            'icons': false
-    //        }
-    //    }
-    //});
-
     $('#fullscreen').on('click', function () {
         editor.setOption('fullScreen', !editor.getOption('fullScreen'))
     });
@@ -100,9 +92,14 @@ window.onload = function () {
         $('#selected-editor-language').html(val);
     });
 
+    var configLang = localStorage.getItem('config-language');
+    $('#selected-config-language').html(configLang !== '' ? configLang : 'text');
+    Sink.setOptionstLanguage(configLang !== '' ? configLang : 'text');
+
     $(document).on('click', '.config-language', function(e) {
         var val = e.target.text;
         Sink.setOptionstLanguage(val);
+        localStorage.setItem("config-language", val);
         $('#selected-config-language').html(val);
     });
 

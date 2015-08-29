@@ -94,37 +94,20 @@ var Sink = (function () {
             $('#config-' + language).remove();
         });
 
-        //var options = '';
         var foundLanguages = [];
         var foundServices = [];
+
         response.forEach(function (service) {
-
-
-
             if (foundLanguages.indexOf(service.language) == -1) {
                 foundLanguages.push(service.language);
                 $('#editor-languages').append('<li><a href="#" id="editor-' + service.language + '" class="editor-language">' + service.language + '</a></li>');
                 $('#config-languages').append('<li><a href="#" id="config-' + service.language + '" class="config-language">' + service.language + '</a></li>');
             }
             foundServices.push(service);
-
-            //options +=
-            //    '<tr id="' + service.service_id + '">' +
-            //    '<td class="mid-align"><div class="checkbox checkbox-primary">' +
-            //    '<input id="' + service.service_id + '" type="checkbox" class="discoverOption styled"' + checked + '>' +
-            //    '<label for="' + service.service_id + '">' +
-            //    service.service_id +
-            //    '</label>' +
-            //    '</div></td>' +
-            //    '<td class="mid-align">' + service.label + '</td>' +
-            //    '<td class="mid-align">' + service.description + '</td>' +
-            //    '<td class="mid-align">' + service.language + '</td>' +
-            //    '<td class="mid-align">' + service.product + '</td>' +
-            //    '</tr>';
         });
+
         availableServices = foundServices;
         languages = foundLanguages;
-        //$('#services').html(options);
         buildServiceOptions();
     }
 

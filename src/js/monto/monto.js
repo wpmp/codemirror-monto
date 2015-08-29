@@ -44,17 +44,7 @@
                     });
                 });
             } else if (newProduct.product === 'outline') {
-                //TODO PERFORMANCE!!!!!!!!!!!
-                var outline = $('#outline');
-                //outline.jstree().destroy();
-                outline.html(refreshOutline(JSON.parse(newProduct.contents).children));
-                //outline.jstree({
-                //    'core': {
-                //        'themes': {
-                //            'icons': false
-                //        }
-                //    }
-                //});
+                $('#outline').html(refreshOutline(JSON.parse(newProduct.contents).children));
             }
         });
 
