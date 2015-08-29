@@ -49,7 +49,7 @@ window.onload = function () {
         Source.discoverServices();
     });
 
-    $('#configure').on('click', function() {
+    $('#configure').on('click', function () {
         Source.configureServices();
     });
 
@@ -70,6 +70,7 @@ window.onload = function () {
             };
             // TODO fire change on editor, probably bug?
             reader.readAsText(file);
+            $('#file-name').html(file.name);
         } else {
             alert('The File APIs are not fully supported in this browser.');
         }
@@ -80,7 +81,7 @@ window.onload = function () {
         $(this).tab('show');
     });
 
-    $('body').on('change', '.discoverOption', function(e) {
+    $(document).on('change', '.discoverOption', function (e) {
         if (this.checked) {
             Sink.enableService(this.id);
         } else {
@@ -88,11 +89,21 @@ window.onload = function () {
         }
     });
 
-    $('#programmingLanguage').val(localStorage.getItem("programmingLanguage"))
-        .on('input', function(e) {
-        var val = $('#programmingLanguage').val();
+    var editorLang = localStorage.getItem('editor-language');
+    $('#selected-editor-language').html(editorLang !== '' ? editorLang : 'text');
+    Source.setMessageLanguage(editorLang !== '' ? editorLang : 'text');
+
+    $(document).on('click', '.editor-language', function (e) {
+        var val = e.target.text;
         Source.setMessageLanguage(val);
-        localStorage.setItem("programmingLanguage", val);
+        localStorage.setItem("editor-language", val);
+        $('#selected-editor-language').html(val);
+    });
+
+    $(document).on('click', '.config-language', function(e) {
+        var val = e.target.text;
+        Sink.setOptionstLanguage(val);
+        $('#selected-config-language').html(val);
     });
 
     setTimeout(function () {

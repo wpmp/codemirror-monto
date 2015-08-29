@@ -34,106 +34,147 @@
 </head>
 <body>
 <div class="cm-s-monto container-fluid">
-    <h3>Monto Web Editor</h3>
+    <h4>Monto Web Editor</h4>
 
     <div class="hiddenDiv">
         <input type="file" id="fileInput" name="files[]"/>
     </div>
 
-    <div class="row">
-        <div class="col-md-12">
-            <div>
-                <ul id="tabs" class="nav nav-tabs">
-                    <li role="presentation" class="active"><a href="#tab-editor">Editor</a></li>
-                    <li role="presentation"><a href="#tab-options">Options</a></li>
-                    <li role="presentation"><a href="#tab-discovery">Discovery</a></li>
-                    <li role="presentation"><a href="#tab-configuration">Configuration</a></li>
-                    <li role="presentation"><a href="#tab-version">Version</a></li>
-                    <li role="presentation"><a href="#tab-tokens">Tokens</a></li>
-                    <li role="presentation"><a href="#tab-ast">AST</a></li>
-                    <li role="presentation"><a href="#tab-outline">Outline</a></li>
-                    <li role="presentation"><a href="#tab-codecompletion">Code completion</a></li>
-                    <li role="presentation"><a href="#tab-errors">Errors</a></li>
-                </ul>
+    <ul id="tabs" class="nav nav-tabs">
+        <li role="presentation" class="active"><a href="#tab-editor">Editor</a></li>
+        <li role="presentation"><a href="#tab-options">Options</a></li>
+        <li role="presentation"><a href="#tab-discovery">Discovery</a></li>
+        <li role="presentation"><a href="#tab-configuration">Configuration</a></li>
+        <li role="presentation"><a href="#tab-version">Version</a></li>
+        <li role="presentation"><a href="#tab-tokens">Tokens</a></li>
+        <li role="presentation"><a href="#tab-ast">AST</a></li>
+        <li role="presentation"><a href="#tab-outline">Outline</a></li>
+        <li role="presentation"><a href="#tab-codecompletion">Code completion</a></li>
+        <li role="presentation"><a href="#tab-errors">Errors</a></li>
+    </ul>
 
-                <div class="tab-content">
-                    <div role="tabpanel" id="tab-editor" class="tab-pane active">
-                        <br/>
+    <div class="tab-content">
+        <div role="tabpanel" id="tab-editor" class="tab-pane active">
+            <br/>
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <!--<button id="new" class="btn btn-primary">New file</button>-->
-                                <button id="load" class="btn btn-primary">Load File</button>
-                                <button id="save" class="btn btn-primary">Save file</button>
-                                <button id="fullscreen" class="btn btn-primary">Fullscreen (F11)</button>
-                            </div>
-                        </div>
-                        <br/>
-
-                        <div class="row">
-                            <div class="col-md-10">
-                                <textarea id="editor"></textarea>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="panel panel-default cm-s-monto">
-                                    <div class="panel-heading">
-                                        Outline
-                                    </div>
-                                    <div id="outline" class="panel-body">
-                                    </div>
-                                </div>
-                            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="btn-group" role="group">
+                        <!--<button id="new" class="btn btn-primary">New file</button>-->
+                        <button id="load" class="btn btn-primary">Load File</button>
+                        <button id="save" class="btn btn-primary">Save file</button>
+                        <button id="fullscreen" class="btn btn-primary">Fullscreen (F11)</button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                <span id="selected-editor-language">text</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul id="editor-languages" class="dropdown-menu">
+                                <li><a href="#" id="editor-text" class="editor-language">text</a></li>
+                                <li class="divider"></li>
+                            </ul>
                         </div>
                     </div>
-                    <div role="tabpanel" id="tab-options" class="tab-pane">
-                        <br/>
+                </div>
+            </div>
+            <br />
 
-                        <div>
-                            <button id="discover" class="btn btn-primary">Discover</button>
-                            <button id="configure" class="btn btn-primary">Configure</button>
+            <div class="row">
+                <div class="col-md-10">
+                    <label for="editor" id="file-name"></label>
+                    <textarea id="editor"></textarea>
+                </div>
+                <div class="col-md-2">
+                    <div class="panel panel-primary panel-default cm-s-monto">
+                        <div class="panel-heading">
+                            Outline
                         </div>
-                        <br/>
-
-                        <div class="input-group">
-                            <span class="input-group-addon">Programming Language:</span>
-                            <input type="text" class="form-control" id="programmingLanguage">
-                        </div>
-                        <br/>
-
-                        <div class="panel panel-default cm-s-monto">
-                            <div class="panel-heading">
-                                Services
-                            </div>
-                            <div id="discovery" class="panel-body">
-                            </div>
+                        <div id="outline" class="panel-body">
                         </div>
                     </div>
-                    <div role="tabpanel" id="tab-discovery" class="tab-pane">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <br />
-                                <div>Discover Request</div>
-                                <br />
-                                <div id="discoverRequest"></div>
-                            </div>
-                            <div class="col-md-6">
-                                <br />
-                                <div>Discover Response</div>
-                                <br />
-                                <div id="discoverResponse"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div role="tabpanel" id="tab-configuration" class="tab-pane"></div>
-                    <div role="tabpanel" id="tab-version" class="tab-pane"></div>
-                    <div role="tabpanel" id="tab-tokens" class="tab-pane"></div>
-                    <div role="tabpanel" id="tab-ast" class="tab-pane"></div>
-                    <div role="tabpanel" id="tab-outline" class="tab-pane"></div>
-                    <div role="tabpanel" id="tab-codecompletion" class="tab-pane"></div>
-                    <div role="tabpanel" id="tab-errors" class="tab-pane"></div>
                 </div>
             </div>
         </div>
+        <div role="tabpanel" id="tab-options" class="tab-pane">
+            <br/>
+
+            <div class="btn-group" role="group">
+                <button id="discover" class="btn btn-primary">Discover</button>
+                <button id="configure" class="btn btn-primary">Configure</button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        <span id="selected-config-language">all</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul id="config-languages" class="dropdown-menu">
+                        <li><a href="#" id="config-all" class="config-language">all</a></li>
+                        <li class="divider"></li>
+                    </ul>
+                </div>
+            </div>
+            <p></p>
+
+            <div class="panel panel-primary panel-default cm-s-monto">
+                <div class="panel-heading">
+                    Services
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Service ID</th>
+                                <th>Label</th>
+                                <th>Description</th>
+                                <th>Language</th>
+                                <th>Product</th>
+                            </tr>
+                            </thead>
+                            <tbody id="services">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-primary panel-default cm-s-monto">
+                <div class="panel-heading">
+                    Options
+                </div>
+                <div class="panel-body">
+                    todo
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" id="tab-discovery" class="tab-pane">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="panel panel-primary panel-default cm-s-monto">
+                        <div class="panel-heading">
+                            Discover Request
+                        </div>
+                        <div id="discoverRequest" class="panel-body">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-primary panel-default cm-s-monto">
+                        <div class="panel-heading">
+                            Discover Response
+                        </div>
+                        <div id="discoverResponse" class="panel-body">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" id="tab-configuration" class="tab-pane"></div>
+        <div role="tabpanel" id="tab-version" class="tab-pane"></div>
+        <div role="tabpanel" id="tab-tokens" class="tab-pane"></div>
+        <div role="tabpanel" id="tab-ast" class="tab-pane"></div>
+        <div role="tabpanel" id="tab-outline" class="tab-pane"></div>
+        <div role="tabpanel" id="tab-codecompletion" class="tab-pane"></div>
+        <div role="tabpanel" id="tab-errors" class="tab-pane"></div>
     </div>
 </div>
 </body>

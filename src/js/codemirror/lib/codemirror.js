@@ -1170,8 +1170,7 @@
     // Used to work around IE issue with selection being forgotten when focus moves away from textarea
     this.hasSelection = false;
     this.composing = null;
-  };
-
+  }
   function hiddenTextarea() {
     var te = elt("textarea", null, null, "position: absolute; padding: 0; width: 1px; height: 1em; outline: none");
     var div = elt("div", [te], null, "overflow: hidden; position: relative; width: 3px; height: 0px;");
@@ -3369,7 +3368,7 @@
         prevTouch = d.activeTouch;
         prevTouch.end = +new Date;
       }
-    };
+    }
     function isMouseLikeTouchEvent(e) {
       if (e.touches.length != 1) return false;
       var touch = e.touches[0];
@@ -6170,7 +6169,7 @@
 
   function detachSharedMarkers(markers) {
     for (var i = 0; i < markers.length; i++) {
-      var marker = markers[i], linked = [marker.primary.doc];;
+      var marker = markers[i], linked = [marker.primary.doc];
       linkedDocs(marker.primary.doc, function(d) { linked.push(d); });
       for (var j = 0; j < marker.markers.length; j++) {
         var subMarker = marker.markers[j];
@@ -8054,7 +8053,11 @@
       list = orphanDelayedCallbacks = [];
       setTimeout(fireOrphanDelayed, 0);
     }
-    function bnd(f) {return function(){f.apply(null, args);};};
+    function bnd(f) {
+      return function () {
+        f.apply(null, args);
+      };
+    }
     for (var i = 0; i < arr.length; ++i)
       list.push(bnd(arr[i]));
   }
@@ -8184,8 +8187,7 @@
     }
     if (props) copyObj(props, inst);
     return inst;
-  };
-
+  }
   function copyObj(obj, target, overwrite) {
     if (!target) target = {};
     for (var prop in obj)

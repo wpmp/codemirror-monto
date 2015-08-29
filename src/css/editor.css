@@ -10,3 +10,8 @@
 .table tbody>tr>td.mid-align{
     vertical-align: middle;
 }
+
+.outline {
+    padding-left: 20px;
+    /*list-style-type: none;*/
+}

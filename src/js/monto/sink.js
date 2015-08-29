@@ -3,6 +3,9 @@ var Sink = (function () {
     var receiveEvents = [];
     var parse = false;
     var enabledServices = ["discover"];
+    var availableServices = [];
+    var languages = [];
+    var optionLanguage = 'all';
 
     var tokens = {
         version_id: -1
@@ -56,7 +59,6 @@ var Sink = (function () {
         } else {
             var index = enabledServices.indexOf(rawMessage.data);
             if (index > -1) {
-                console.log(rawMessage.data);
                 parse = true;
             }
         }
@@ -85,31 +87,75 @@ var Sink = (function () {
     }
 
     function acceptNewDiscoverResponse(response) {
-        var options = '<div class="table-responsive"><table class="table"><thead><tr><th>Service ID</th><th>Label</th><th>Description</th><th>Language</th><th>Product</th></tr></thead><tbody>';
         $('#discoverResponse').html(arrayToHtmlString(response));
-        response.forEach(function (service) {
-            var stored = localStorage.getItem(service.service_id);
-            var checked = '';
-            if (stored !== null && stored !== undefined) {
-                checked = 'checked';
-                enabledServices.push(service.service_id);
-            }
-            options +=
-                '<tr>' +
-                '<td class="mid-align"><div class="checkbox checkbox-primary">' +
-                '<input id="' + service.service_id + '" type="checkbox" class="discoverOption styled"' + checked + '>' +
-                '<label for="' + service.service_id + '">' +
-                service.service_id +
-                '</label>' +
-                '</div></td>' +
-                '<td class="mid-align">' + service.label + '</td>' +
-                '<td class="mid-align">' + service.description + '</td>' +
-                '<td class="mid-align">' + service.language + '</td>' +
-                '<td class="mid-align">' + service.product + '</td>' +
-                '</tr>';
+
+        languages.forEach(function (language) {
+            $('#editor-' + language).remove();
+            $('#config-' + language).remove();
         });
-        options += '</tbody></table></div>';
-        $('#discovery').html(options);
+
+        //var options = '';
+        var foundLanguages = [];
+        var foundServices = [];
+        response.forEach(function (service) {
+
+
+
+            if (foundLanguages.indexOf(service.language) == -1) {
+                foundLanguages.push(service.language);
+                $('#editor-languages').append('<li><a href="#" id="editor-' + service.language + '" class="editor-language">' + service.language + '</a></li>');
+                $('#config-languages').append('<li><a href="#" id="config-' + service.language + '" class="config-language">' + service.language + '</a></li>');
+            }
+            foundServices.push(service);
+
+            //options +=
+            //    '<tr id="' + service.service_id + '">' +
+            //    '<td class="mid-align"><div class="checkbox checkbox-primary">' +
+            //    '<input id="' + service.service_id + '" type="checkbox" class="discoverOption styled"' + checked + '>' +
+            //    '<label for="' + service.service_id + '">' +
+            //    service.service_id +
+            //    '</label>' +
+            //    '</div></td>' +
+            //    '<td class="mid-align">' + service.label + '</td>' +
+            //    '<td class="mid-align">' + service.description + '</td>' +
+            //    '<td class="mid-align">' + service.language + '</td>' +
+            //    '<td class="mid-align">' + service.product + '</td>' +
+            //    '</tr>';
+        });
+        availableServices = foundServices;
+        languages = foundLanguages;
+        //$('#services').html(options);
+        buildServiceOptions();
+    }
+
+    function buildServiceOptions() {
+        availableServices.forEach(function (service) {
+            if (optionLanguage === 'all' || service.language === optionLanguage) {
+                var tr = $('#' + service.service_id);
+                if (tr.length === 0) {
+                    var stored = localStorage.getItem(service.service_id);
+                    var checked = '';
+                    if (stored !== null && stored !== undefined) {
+                        checked = 'checked';
+                        enabledServices.push(service.service_id);
+                    }
+                    $('#services').append('<tr id="' + service.service_id + '">' +
+                    '<td class="mid-align"><div class="checkbox checkbox-primary">' +
+                    '<input id="' + service.service_id + '" type="checkbox" class="discoverOption styled"' + checked + '>' +
+                    '<label for="' + service.service_id + '">' +
+                    service.service_id +
+                    '</label>' +
+                    '</div></td>' +
+                    '<td class="mid-align">' + service.label + '</td>' +
+                    '<td class="mid-align">' + service.description + '</td>' +
+                    '<td class="mid-align">' + service.language + '</td>' +
+                    '<td class="mid-align">' + service.product + '</td>' +
+                    '</tr>');
+                }
+            } else {
+                $('#' + service.service_id).remove();
+            }
+        });
     }
 
     return {
@@ -130,6 +176,10 @@ var Sink = (function () {
         },
         registerFunctionOnReceive: function (func) {
             receiveEvents.push(func)
+        },
+        setOptionstLanguage: function (language) {
+            optionLanguage = language;
+            buildServiceOptions();
         },
         enableService: function (serviceID) {
             var index = enabledServices.indexOf(serviceID);
