@@ -33,7 +33,6 @@ var Sink = (function () {
 
     function arrayToHtmlString(content) {
         var copy = $.extend(true, [], content);
-        var string = '[';
         copy.forEach(function (e) {
             if (e.options !== undefined && e.options !== null) {
                 e.options = JSON.parse(e.options);
@@ -41,10 +40,8 @@ var Sink = (function () {
             if (e.configurations !== undefined && e.options !== null) {
                 e.configurations = JSON.parse(e.configurations);
             }
-            string += '\n' + JSON.stringify(e, null, 2);
         });
-        string += '\n]';
-        return '<pre>' + string.replace('<', '&lt').replace('>', '&gt') + '</pre>';
+        return '<pre>' + JSON.stringify(copy, null, 2).replace('<', '&lt').replace('>', '&gt') + '</pre>';
     }
 
     sink.onmessage = function (rawMessage) {
