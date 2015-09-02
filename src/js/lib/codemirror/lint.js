@@ -2,11 +2,6 @@
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
 (function(mod) {
-  if (typeof exports == "object" && typeof module == "object") // CommonJS
-    mod(require("../../lib/codemirror"));
-  else if (typeof define == "function" && define.amd) // AMD
-    define(["../../lib/codemirror"], mod);
-  else // Plain browser env
     mod(CodeMirror);
 })(function(CodeMirror) {
   "use strict";
@@ -187,7 +182,8 @@
   CodeMirror.defineOption("lint", false, function(cm, val, old) {
     if (old && old != CodeMirror.Init) {
       clearMarks(cm);
-      cm.off("change", onChange);
+      if (cm.state.lint.options.lintOnChange !== false)
+        cm.off("change", onChange);
       CodeMirror.off(cm.getWrapperElement(), "mouseover", cm.state.lint.onMouseOver);
       clearTimeout(cm.state.lint.timeout);
       delete cm.state.lint;
@@ -197,7 +193,7 @@
       var gutters = cm.getOption("gutters"), hasLintGutter = false;
       for (var i = 0; i < gutters.length; ++i) if (gutters[i] == GUTTER_ID) hasLintGutter = true;
       var state = cm.state.lint = new LintState(cm, parseOptions(cm, val), hasLintGutter);
-      if (!state.options.lintOnChange !== false)
+      if (state.options.lintOnChange !== false)
         cm.on("change", onChange);
       if (state.options.tooltips != false)
         CodeMirror.on(cm.getWrapperElement(), "mouseover", state.onMouseOver);

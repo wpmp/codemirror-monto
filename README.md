@@ -15,3 +15,11 @@ Install instructions
 6. Start coding
 
 Known issues: Currently you have to restart the broker before you want to reload the page!
+
+Library Versions:
+CodeMirror: 5.6
+Bootstrap: 3.3.5
+font-awesome: 4.4.0
+JQuery: 2.1.4
+FileSaver.js: accessed master on 02.09.2015
+Awesome Bootstrap Checkbox: accessed master on 02.09.2015
