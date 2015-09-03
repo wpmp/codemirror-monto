@@ -1,7 +1,7 @@
 Codemirror Monto
 ================
 
-This is a web-based editor using Monto and CodeMirror.
+This is a web-based editor for Monto using CodeMirror.
 
 Install instructions
 --------------------
@@ -10,13 +10,16 @@ Install instructions
    and follow the installation instructions
 2. Get the [services] (https://github.com/monto-editor) of your choice
 3. Run the broker and the services
-4. (Optional) In the `src/js/monto/source.js` in `message.language` set the language of the service you want to use. Right now this doesn't matter
-5. Open `index.html` with the browser of your choice
-6. Start coding
+4. Open `index.html` with the browser of your choice
+5. Click on `Options` and then `Discover`
+6. Configure discovered services as wanted
+7. Click on `Editor`
+8. Select the language of your choice in the dropdown menu with the text `text`
+9. Start coding
 
-Known issues: Currently you have to restart the broker before you want to reload the page!
+Used libraries
+-----------------
 
-Library Versions:
 CodeMirror: 5.6
 Bootstrap: 3.3.5
 font-awesome: 4.4.0
