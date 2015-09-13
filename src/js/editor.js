@@ -73,6 +73,11 @@ window.onload = function () {
         $(this).tab('show');
     });
 
+    $('#message-tabs').find('a').on('click', function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+
     $(document).on('change', '.discoverOption', function (e) {
         if (this.checked) {
             Sink.enableService(this.id);

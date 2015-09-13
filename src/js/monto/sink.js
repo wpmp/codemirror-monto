@@ -2,6 +2,7 @@ var Sink = (function () {
     var sink = new WebSocket('ws://localhost:5003/');
     var receiveEvents = [];
     var parse = false;
+    var parseService = "";
     var enabledServices = ["discover"];
     var availableServices = [];
     var languages = [];
@@ -37,7 +38,7 @@ var Sink = (function () {
             if (e.options !== undefined && e.options !== null) {
                 e.options = JSON.parse(e.options);
             }
-            if (e.configurations !== undefined && e.options !== null) {
+            if (e.configurations !== undefined && e.configurations !== null) {
                 e.configurations = JSON.parse(e.configurations);
             }
         });
@@ -53,10 +54,12 @@ var Sink = (function () {
                 acceptNewDiscoverResponse(message);
             }
             parse = false;
+            parseService = "";
         } else {
             var index = enabledServices.indexOf(rawMessage.data);
             if (index > -1) {
                 parse = true;
+                parseService = rawMessage.data;
             }
         }
     };
@@ -106,6 +109,7 @@ var Sink = (function () {
         availableServices = foundServices;
         languages = foundLanguages;
         buildServiceOptions();
+        buildConfigurationOptions();
     }
 
     function buildServiceOptions() {
@@ -120,22 +124,71 @@ var Sink = (function () {
                         enabledServices.push(service.service_id);
                     }
                     $('#services').append('<tr id="' + service.service_id + '">' +
-                    '<td class="mid-align"><div class="checkbox checkbox-primary">' +
-                    '<input id="' + service.service_id + '" type="checkbox" class="discoverOption styled"' + checked + '>' +
-                    '<label for="' + service.service_id + '">' +
-                    service.service_id +
-                    '</label>' +
-                    '</div></td>' +
-                    '<td class="mid-align">' + service.label + '</td>' +
-                    '<td class="mid-align">' + service.description + '</td>' +
-                    '<td class="mid-align">' + service.language + '</td>' +
-                    '<td class="mid-align">' + service.product + '</td>' +
-                    '</tr>');
+                        '<td class="mid-align"><div class="checkbox checkbox-primary">' +
+                        '<input id="' + service.service_id + '" type="checkbox" class="discoverOption styled"' + checked + '>' +
+                        '<label for="' + service.service_id + '">' +
+                        service.service_id +
+                        '</label>' +
+                        '</div></td>' +
+                        '<td class="mid-align">' + service.label + '</td>' +
+                        '<td class="mid-align">' + service.description + '</td>' +
+                        '<td class="mid-align">' + service.language + '</td>' +
+                        '<td class="mid-align">' + service.product + '</td>' +
+                        '</tr>');
                 }
             } else {
                 $('#' + service.service_id).remove();
             }
         });
+    }
+
+    function buildConfigurationOptions() {
+        availableServices.forEach(function (service) {
+            var panel = $('#options-' + service.service_id);
+            if (panel.length === 0) {
+                var content = parseConfigurationOptions(JSON.parse(service.options), service);
+                $('#options').append(content);
+            }
+        });
+    }
+
+    function parseConfigurationOptions(options, service) {
+        if (options !== undefined && options !== null) {
+            var content = '<div id="options-' + service.service_id + '">';
+            options.forEach(function (option) {
+                var id = service.service_id + '-' + option.option_id;
+                if (option.type === "number") {
+                    content += '<div><input type="number" ' +
+                        'id="' + id + '" ' +
+                        'placeholder="' + option.default_value + '" ' +
+                        'min="' + option.from + '" ' +
+                        'max="' + option.to + '" ' +
+                        '> ' + option.label + '</div>';
+                } else if (option.type === "text") {
+                    content += '<div><input type="text" ' +
+                        'id="' + id + '" ' +
+                        'placeholder="' + option.default_value + '" ' +
+                        '> ' + option.label + '</div>';
+                } else if (option.type === "boolean") {
+                    content += '<div class="checkbox checkbox-primary"><input type="checkbox" class="styled" ' +
+                        'id="' + id + '" ' +
+                        (option.default_value ? 'checked ' : '') +
+                        '><label for="' + id + '">' + option.label + '</label></div>';
+                } else if (option.type === "xor") {
+                    option.values.forEach(function (xorOption) {
+                        content += '<div class="radio radio-primary"><input type="radio" class="styled" ' +
+                            'id="' + id + "-" + xorOption + '" ' +
+                            'name="' + id + '"' +
+                            (option.default_value === xorOption ? 'checked ' : '') +
+                            '><label for="' + id + "-" + xorOption + '">' + xorOption + '</label></div>';
+                    });
+                } else if (option.type === undefined && option.members !== undefined) {
+                    content += parseConfigurationOptions(option.members, service);
+                }
+            });
+            content += '</div>';
+            return content;
+        }
     }
 
     return {

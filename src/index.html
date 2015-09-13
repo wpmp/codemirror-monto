@@ -41,14 +41,7 @@
     <ul id="tabs" class="nav nav-tabs">
         <li role="presentation" class="active"><a href="#tab-editor">Editor</a></li>
         <li role="presentation"><a href="#tab-options">Options</a></li>
-        <li role="presentation"><a href="#tab-discovery">Discovery</a></li>
-        <li role="presentation"><a href="#tab-configuration">Configuration</a></li>
-        <li role="presentation"><a href="#tab-version">Version</a></li>
-        <li role="presentation"><a href="#tab-tokens">Tokens</a></li>
-        <li role="presentation"><a href="#tab-ast">AST</a></li>
-        <li role="presentation"><a href="#tab-outline">Outline</a></li>
-        <li role="presentation"><a href="#tab-codecompletion">Code completion</a></li>
-        <li role="presentation"><a href="#tab-errors">Errors</a></li>
+        <li role="presentation"><a href="#tab-messages">Messages</a></li>
     </ul>
 
     <div class="tab-content">
@@ -140,39 +133,55 @@
                     Options
                 </div>
                 <div class="panel-body">
-                    todo
-                </div>
-            </div>
-        </div>
-        <div role="tabpanel" id="tab-discovery" class="tab-pane">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="panel panel-primary panel-default cm-s-monto">
-                        <div class="panel-heading">
-                            Discover Request
-                        </div>
-                        <div id="discoverRequest" class="panel-body">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="panel panel-primary panel-default cm-s-monto">
-                        <div class="panel-heading">
-                            Discover Response
-                        </div>
-                        <div id="discoverResponse" class="panel-body">
-                        </div>
+                    <div id="options">
+
                     </div>
                 </div>
             </div>
         </div>
-        <div role="tabpanel" id="tab-configuration" class="tab-pane"></div>
-        <div role="tabpanel" id="tab-version" class="tab-pane"></div>
-        <div role="tabpanel" id="tab-tokens" class="tab-pane"></div>
-        <div role="tabpanel" id="tab-ast" class="tab-pane"></div>
-        <div role="tabpanel" id="tab-outline" class="tab-pane"></div>
-        <div role="tabpanel" id="tab-codecompletion" class="tab-pane"></div>
-        <div role="tabpanel" id="tab-errors" class="tab-pane"></div>
+        <div role="tabpanel" id="tab-messages" class="tab-pane">
+            <ul id="message-tabs" class="nav nav-tabs">
+                <li role="presentation" class="active"><a href="#tab-discovery">Discovery</a></li>
+                <li role="presentation"><a href="#tab-configuration">Configuration</a></li>
+                <li role="presentation"><a href="#tab-version">Version</a></li>
+                <li role="presentation"><a href="#tab-tokens">Tokens</a></li>
+                <li role="presentation"><a href="#tab-ast">AST</a></li>
+                <li role="presentation"><a href="#tab-outline">Outline</a></li>
+                <li role="presentation"><a href="#tab-codecompletion">Code completion</a></li>
+                <li role="presentation"><a href="#tab-errors">Errors</a></li>
+            </ul>
+            <div class="tab-content">
+                <div role="tabpanel" id="tab-discovery" class="tab-pane active">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="panel panel-primary panel-default cm-s-monto">
+                                <div class="panel-heading">
+                                    Discover Request
+                                </div>
+                                <div id="discoverRequest" class="panel-body">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="panel panel-primary panel-default cm-s-monto">
+                                <div class="panel-heading">
+                                    Discover Response
+                                </div>
+                                <div id="discoverResponse" class="panel-body">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div role="tabpanel" id="tab-configuration" class="tab-pane"></div>
+                <div role="tabpanel" id="tab-version" class="tab-pane"></div>
+                <div role="tabpanel" id="tab-tokens" class="tab-pane"></div>
+                <div role="tabpanel" id="tab-ast" class="tab-pane"></div>
+                <div role="tabpanel" id="tab-outline" class="tab-pane"></div>
+                <div role="tabpanel" id="tab-codecompletion" class="tab-pane"></div>
+                <div role="tabpanel" id="tab-errors" class="tab-pane"></div>
+            </div>
+        </div>
     </div>
 </div>
 </body>

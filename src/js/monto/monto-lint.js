@@ -31,7 +31,6 @@
                 to: position.to
             });
         });
-//      {message, severity, form, to}
         return list;
     });
 
