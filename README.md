@@ -26,3 +26,4 @@ font-awesome: 4.4.0
 JQuery: 2.1.4
 FileSaver.js: accessed master on 02.09.2015
 Awesome Bootstrap Checkbox: accessed master on 02.09.2015
+sprintf.js: accessed master on 15.09.2015

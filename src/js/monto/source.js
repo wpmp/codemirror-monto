@@ -5,32 +5,15 @@ var Source = (function () {
     var versionMsg = {
         source: 'nofile',
         version_id: 0,
-        language: localStorage.getItem('programmingLanguage'),
+        language: localStorage.getItem('editor-language'),
         //invalid: [],
         contents: '',
         selections: []
     };
 
-    var discoverReq = [
-        {
-            service_id: 'test'
-        },
-        {
-            language: 'test123'
-        }
-    ];
+    var discoverReq = [];
 
-    var configuration = [
-        {
-            service_id: 'ecmascriptOutliner',
-            configurations: [
-                {
-                    option_id: 'a',
-                    value: false
-                }
-            ]
-        }
-    ];
+    var configuration = [];
 
     function toHtmlString(content) {
         return '<pre>' + JSON.stringify(content, null, 2).replace('<', '&lt').replace('>', '&gt') + '</pre>';
@@ -52,6 +35,9 @@ var Source = (function () {
         },
         getMessage: function () {
             return versionMsg;
+        },
+        getConfigurationMessage : function () {
+            return configuration;
         },
         setMessage: function (value) {
             versionMsg = value;
@@ -80,6 +66,20 @@ var Source = (function () {
         discoverServices: function () {
             src.send(JSON.stringify(discoverReq));
             $('#discoverRequest').html(toHtmlString(discoverReq));
+        },
+        setConfigurationMessage: function (value) {
+            configuration = value;
+        },
+        setConfiguration: function (serviceID, optionID, value) {
+            configuration.forEach(function(service) {
+                if (service.service_id === serviceID) {
+                    service.configurations.forEach(function (config) {
+                        if (config.option_id === optionID) {
+                            config.value = value;
+                        }
+                    });
+                }
+            });
         },
         configureServices: function () {
             var copy = $.extend(true, [], configuration);

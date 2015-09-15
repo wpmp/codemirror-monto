@@ -7,6 +7,7 @@ var Sink = (function () {
     var availableServices = [];
     var languages = [];
     var optionLanguage = 'all';
+    var discoverResponse = [];
 
     var tokens = {
         version_id: -1
@@ -29,7 +30,7 @@ var Sink = (function () {
         if (copy.contents !== undefined && copy.contents !== null) {
             copy.contents = JSON.parse(copy.contents);
         }
-        return '<pre>' + JSON.stringify(copy, null, 2).replace('<', '&lt').replace('>', '&gt') + '</pre>';
+        return sprintf('<pre>%s</pre>', JSON.stringify(copy, null, 2).replace('<', '&lt').replace('>', '&gt'));
     }
 
     function arrayToHtmlString(content) {
@@ -42,7 +43,7 @@ var Sink = (function () {
                 e.configurations = JSON.parse(e.configurations);
             }
         });
-        return '<pre>' + JSON.stringify(copy, null, 2).replace('<', '&lt').replace('>', '&gt') + '</pre>';
+        return sprintf('<pre>%s</pre>', JSON.stringify(copy, null, 2).replace('<', '&lt').replace('>', '&gt'));
     }
 
     sink.onmessage = function (rawMessage) {
@@ -88,6 +89,7 @@ var Sink = (function () {
 
     function acceptNewDiscoverResponse(response) {
         $('#discoverResponse').html(arrayToHtmlString(response));
+        discoverResponse = response;
 
         languages.forEach(function (language) {
             $('#editor-' + language).remove();
@@ -100,11 +102,26 @@ var Sink = (function () {
         response.forEach(function (service) {
             if (foundLanguages.indexOf(service.language) == -1) {
                 foundLanguages.push(service.language);
-                $('#editor-languages').append('<li><a href="#" id="editor-' + service.language + '" class="editor-language">' + service.language + '</a></li>');
-                $('#config-languages').append('<li><a href="#" id="config-' + service.language + '" class="config-language">' + service.language + '</a></li>');
+                $('#editor-languages').append(sprintf('<li><a href="#" id="editor-%s" class="editor-language">%s</a></li>', service.language, service.language));
+                $('#config-languages').append(sprintf('<li><a href="#" id="config-%s" class="config-language">%s</a></li>', service.language, service.language));
             }
             foundServices.push(service);
         });
+
+        var configMsg = Source.getConfigurationMessage();
+        availableServices.forEach(function (service) {
+            if (!foundServices.indexOf(service) > -1) {
+                $('#' + service.service_id).remove();
+                var serviceIndex = -1;
+                configMsg.forEach(function (config, index) {
+                    if (config.service_id === service.service_id) {
+                        serviceIndex = index;
+                    }
+                });
+                configMsg.splice(serviceIndex, 1);
+            }
+        });
+        Source.setConfigurationMessage(configMsg);
 
         availableServices = foundServices;
         languages = foundLanguages;
@@ -117,24 +134,28 @@ var Sink = (function () {
             if (optionLanguage === 'all' || service.language === optionLanguage) {
                 var tr = $('#' + service.service_id);
                 if (tr.length === 0) {
-                    var stored = localStorage.getItem(service.service_id);
+                    var serviceStr = localStorage.getItem('selectedServices');
+                    var services = (serviceStr === '' || serviceStr === null || serviceStr === undefined) ? [] : JSON.parse(serviceStr);
                     var checked = '';
-                    if (stored !== null && stored !== undefined) {
+                    if (services.indexOf(service.service_id) > -1) {
                         checked = 'checked';
                         enabledServices.push(service.service_id);
                     }
-                    $('#services').append('<tr id="' + service.service_id + '">' +
-                        '<td class="mid-align"><div class="checkbox checkbox-primary">' +
-                        '<input id="' + service.service_id + '" type="checkbox" class="discoverOption styled"' + checked + '>' +
-                        '<label for="' + service.service_id + '">' +
-                        service.service_id +
-                        '</label>' +
-                        '</div></td>' +
-                        '<td class="mid-align">' + service.label + '</td>' +
-                        '<td class="mid-align">' + service.description + '</td>' +
-                        '<td class="mid-align">' + service.language + '</td>' +
-                        '<td class="mid-align">' + service.product + '</td>' +
-                        '</tr>');
+                    $('#services').append(sprintf(
+                        '<tr id="%s">' +
+                            '<td class="mid-align">' +
+                                '<div class="checkbox checkbox-primary">' +
+                                    '<input id="%s" type="checkbox" class="discoverOption styled" %s>' +
+                                    '<label for="%s">%s</label>' +
+                                '</div>' +
+                            '</td>' +
+                            '<td class="mid-align">%s</td>' +
+                            '<td class="mid-align">%s</td>' +
+                            '<td class="mid-align">%s</td>' +
+                            '<td class="mid-align">%s</td>' +
+                        '</tr>'
+                        ,service.service_id, service.service_id, checked, service.service_id, service.service_id,
+                        service.label, service.description, service.language, service.product));
                 }
             } else {
                 $('#' + service.service_id).remove();
@@ -143,52 +164,92 @@ var Sink = (function () {
     }
 
     function buildConfigurationOptions() {
+        var configMsg = Source.getConfigurationMessage();
         availableServices.forEach(function (service) {
             var panel = $('#options-' + service.service_id);
+            var serviceConfig = [];
+            var content = parseConfigurationOptions(JSON.parse(service.options), service, serviceConfig);
             if (panel.length === 0) {
-                var content = parseConfigurationOptions(JSON.parse(service.options), service);
                 $('#options').append(content);
             }
+            configMsg.push({service_id : service.service_id, configurations : serviceConfig});
         });
+        Source.setConfigurationMessage(configMsg);
     }
 
-    function parseConfigurationOptions(options, service) {
+    function parseConfigurationOptions(options, service, serviceConfig) {
         if (options !== undefined && options !== null) {
             var content = '<div id="options-' + service.service_id + '">';
             options.forEach(function (option) {
                 var id = service.service_id + '-' + option.option_id;
+                var config = localStorage.getItem(id);
+                var value;
                 if (option.type === "number") {
-                    content += '<div><input type="number" ' +
-                        'id="' + id + '" ' +
-                        'placeholder="' + option.default_value + '" ' +
-                        'min="' + option.from + '" ' +
-                        'max="' + option.to + '" ' +
-                        '> ' + option.label + '</div>';
+                    value = (config === null || config === undefined) ? option.default_value : parseInt(config);
+                    content += sprintf(
+                        '<div>' +
+                            '<input type="number" class="config" id="%s" placeholder="%s" min="%s" max="%s" value="%s" > %s' +
+                        '</div>'
+                        , id, option.default_value, option.from, option.to, value, option.label
+                    );
                 } else if (option.type === "text") {
-                    content += '<div><input type="text" ' +
-                        'id="' + id + '" ' +
-                        'placeholder="' + option.default_value + '" ' +
-                        '> ' + option.label + '</div>';
+                    value = (config === null || config === undefined) ? option.default_value : config;
+                    content += sprintf(
+                        '<div>' +
+                            '<input type="text" class="config" id="%s" placeholder="%s" value="%s"> %s' +
+                        '</div>'
+                        , id, option.default_value, value, option.label
+                    );
                 } else if (option.type === "boolean") {
-                    content += '<div class="checkbox checkbox-primary"><input type="checkbox" class="styled" ' +
-                        'id="' + id + '" ' +
-                        (option.default_value ? 'checked ' : '') +
-                        '><label for="' + id + '">' + option.label + '</label></div>';
+                    value = (((config === null || config === undefined) && option.default_value) || Boolean(config));
+                        content += sprintf(
+                        '<div class="checkbox checkbox-primary">' +
+                            '<input type="checkbox" class="config styled" id="%s" %s>' +
+                            '<label for="%s">%s</label>' +
+                        '</div>'
+                        , id, value ? 'checked ' : '', id, option.label
+                    );
                 } else if (option.type === "xor") {
+                    value = option.default_value;
                     option.values.forEach(function (xorOption) {
-                        content += '<div class="radio radio-primary"><input type="radio" class="styled" ' +
-                            'id="' + id + "-" + xorOption + '" ' +
-                            'name="' + id + '"' +
-                            (option.default_value === xorOption ? 'checked ' : '') +
-                            '><label for="' + id + "-" + xorOption + '">' + xorOption + '</label></div>';
+                        if (((config === null || config === undefined || config === '') && option.default_value === xorOption) || (config === xorOption)) {
+                            value = xorOption;
+                        }
+                        content += sprintf(
+                            '<div class="radio radio-primary">' +
+                                '<input type="radio" class="config styled" id="%s-%s" name="%s" %s value="%s">' +
+                                '<label for="%s-%s">%s</label>' +
+                            '</div>'
+                            , id, xorOption, id, (((config === null || config === undefined || config === '') && option.default_value === xorOption) || (config === xorOption)) ? 'checked ' : '', xorOption, id, xorOption, xorOption
+                        );
                     });
                 } else if (option.type === undefined && option.members !== undefined) {
-                    content += parseConfigurationOptions(option.members, service);
+                    content += parseConfigurationOptions(option.members, service, serviceConfig);
+                }
+
+                if (option.type !== undefined && option.members === undefined) {
+                    serviceConfig.push({option_id: option.option_id, value: value});
                 }
             });
             content += '</div>';
             return content;
         }
+    }
+
+    function buildNumberOption() {
+
+    }
+
+    function buildTextOption() {
+
+    }
+
+    function buildBooleanOption() {
+
+    }
+
+    function buildXorOption() {
+
     }
 
     return {
@@ -201,7 +262,7 @@ var Sink = (function () {
         getOutline: function () {
             return outline;
         },
-        getCodecompletion: function () {
+        getCodeCompletion: function () {
             return codecompletion;
         },
         getErrors: function () {
@@ -210,7 +271,7 @@ var Sink = (function () {
         registerFunctionOnReceive: function (func) {
             receiveEvents.push(func)
         },
-        setOptionstLanguage: function (language) {
+        setOptionsLanguage: function (language) {
             optionLanguage = language;
             buildServiceOptions();
         },
@@ -218,14 +279,20 @@ var Sink = (function () {
             var index = enabledServices.indexOf(serviceID);
             if (index == -1) {
                 enabledServices.push(serviceID);
-                localStorage.setItem(serviceID, '');
+                var serviceStr = localStorage.getItem('selectedServices');
+                var services = (serviceStr === '' || serviceStr === null || serviceStr === undefined) ? [] : JSON.parse(serviceStr);
+                services.push(serviceID);
+                localStorage.setItem('selectedServices', JSON.stringify(services));
             }
         },
         disableService: function (serviceID) {
             var index = enabledServices.indexOf(serviceID);
             if (index > -1) {
                 enabledServices.splice(index, 1);
-                localStorage.removeItem(serviceID);
+                var serviceStr = localStorage.getItem('selectedServices');
+                var services = (serviceStr === '' || serviceStr === null || serviceStr === undefined) ? [] : JSON.parse(serviceStr);
+                services.splice(services.indexOf(serviceID), 1);
+                localStorage.setItem('selectedServices', JSON.stringify(services));
             }
         }
     };

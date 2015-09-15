@@ -23,7 +23,7 @@ window.onload = function () {
     });
 
     function save() {
-        saveTextAs(editor.getValue(), Source.getMessage().source);
+        saveAs(new Blob([editor.getValue()], {type:"text/plain;charset=utf-8"}), Source.getMessage().source);
     }
 
     CodeMirror.commands.save = save;
@@ -99,11 +99,11 @@ window.onload = function () {
 
     var configLang = localStorage.getItem('config-language');
     $('#selected-config-language').html(configLang !== '' ? configLang : 'text');
-    Sink.setOptionstLanguage(configLang !== '' ? configLang : 'text');
+    Sink.setOptionsLanguage(configLang !== '' ? configLang : 'text');
 
     $(document).on('click', '.config-language', function(e) {
         var val = e.target.text;
-        Sink.setOptionstLanguage(val);
+        Sink.setOptionsLanguage(val);
         localStorage.setItem("config-language", val);
         $('#selected-config-language').html(val);
     });
@@ -112,4 +112,17 @@ window.onload = function () {
         //TODO probably make this more safe
         $('#discover').trigger('click');
     }, 100);
+
+    $(document).on('change', '.config', function(e) {
+        var id = (e.target.type === 'radio' ? e.target.name : e.target.id);
+        var value = '';
+        if (e.target.type === 'checkbox') {
+            value = e.target.checked === 'on';
+        } else if (e.target.type === 'number' || e.target.type === 'text' || e.target.type === 'radio') {
+            value = e.target.value;
+        }
+        localStorage.setItem(id, value);
+        Source.setConfiguration(e.target.id.split('-')[0], e.target.id.split('-')[1], value);
+    });
+
 };

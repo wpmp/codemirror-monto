@@ -26,7 +26,7 @@
             var position = Source.convertMontoToCMPosWithLength({offset: content.offset, length: content.length});
             list.push({
                 message: content.description,
-                severity: 'error',
+                severity: content.level,
                 from: position.from,
                 to: position.to
             });
