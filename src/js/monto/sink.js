@@ -111,7 +111,7 @@ var Sink = (function () {
         var configMsg = Source.getConfigurationMessage();
         availableServices.forEach(function (service) {
             if (!foundServices.indexOf(service) > -1) {
-                $('#' + service.service_id).remove();
+                $('#row-' + service.service_id).remove();
                 var serviceIndex = -1;
                 configMsg.forEach(function (config, index) {
                     if (config.service_id === service.service_id) {
@@ -132,7 +132,7 @@ var Sink = (function () {
     function buildServiceOptions() {
         availableServices.forEach(function (service) {
             if (optionLanguage === 'all' || service.language === optionLanguage) {
-                var tr = $('#' + service.service_id);
+                var tr = $('#row-' + service.service_id);
                 if (tr.length === 0) {
                     var serviceStr = localStorage.getItem('selectedServices');
                     var services = (serviceStr === '' || serviceStr === null || serviceStr === undefined) ? [] : JSON.parse(serviceStr);
@@ -142,7 +142,7 @@ var Sink = (function () {
                         enabledServices.push(service.service_id);
                     }
                     $('#services').append(sprintf(
-                        '<tr id="%s">' +
+                        '<tr id="row-%s">' +
                             '<td class="mid-align">' +
                                 '<div class="checkbox checkbox-primary">' +
                                     '<input id="%s" type="checkbox" class="discoverOption styled" %s>' +
@@ -158,7 +158,7 @@ var Sink = (function () {
                         service.label, service.description, service.language, service.product));
                 }
             } else {
-                $('#' + service.service_id).remove();
+                $('#row-' + service.service_id).remove();
             }
         });
     }

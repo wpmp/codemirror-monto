@@ -117,8 +117,10 @@ window.onload = function () {
         var id = (e.target.type === 'radio' ? e.target.name : e.target.id);
         var value = '';
         if (e.target.type === 'checkbox') {
-            value = e.target.checked === 'on';
-        } else if (e.target.type === 'number' || e.target.type === 'text' || e.target.type === 'radio') {
+            value = e.target.checked;
+        } else if (e.target.type === 'number') {
+            value = parseInt(e.target.value);
+        } else if (e.target.type === 'text' || e.target.type === 'radio') {
             value = e.target.value;
         }
         localStorage.setItem(id, value);
