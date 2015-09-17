@@ -7,15 +7,17 @@ Install instructions
 --------------------
 
 1. Get the [Monto broker](https://github.com/monto-editor/broker)
-   and follow the installation instructions
+   and follow the build instructions
 2. Get the [services] (https://github.com/monto-editor) of your choice
-3. Run the broker and the services
-4. Open `index.html` with the browser of your choice
-5. Click on `Options` and then `Discover`
-6. Configure discovered services as wanted
-7. Click on `Editor`
-8. Select the language of your choice in the dropdown menu with the text `text`
-9. Start coding
+3. Run the broker using the start.sh script located in the broker project folder
+4. Run the services using the start.sh script located in the service project folder
+5. Open `index.html` with a browser (tested with Chromium 44.0 and Firefox 40.0)
+6. Click on `Options`, then `Discover`
+7. Configure discovered services as wanted
+8. Click `Configure`
+9. Click on `Editor`
+10. Select the language of your choice in the dropdown menu with the label `text`
+11. Start coding
 
 Used libraries
 -----------------

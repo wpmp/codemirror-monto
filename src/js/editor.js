@@ -87,8 +87,8 @@ window.onload = function () {
     });
 
     var editorLang = localStorage.getItem('editor-language');
-    $('#selected-editor-language').html(editorLang !== '' ? editorLang : 'text');
-    Source.setMessageLanguage(editorLang !== '' ? editorLang : 'text');
+    $('#selected-editor-language').html(editorLang !== null && editorLang !== undefined && editorLang !== '' ? editorLang : 'text');
+    Source.setMessageLanguage(editorLang !== null && editorLang !== undefined && editorLang !== '' ? editorLang : 'text');
 
     $(document).on('click', '.editor-language', function (e) {
         var val = e.target.text;
@@ -98,8 +98,8 @@ window.onload = function () {
     });
 
     var configLang = localStorage.getItem('config-language');
-    $('#selected-config-language').html(configLang !== '' ? configLang : 'text');
-    Sink.setOptionsLanguage(configLang !== '' ? configLang : 'text');
+    $('#selected-config-language').html(configLang !== null && configLang !== undefined && configLang !== '' ? configLang : 'all');
+    Sink.setOptionsLanguage(configLang !== null && configLang !== undefined && configLang !== '' ? configLang : 'all');
 
     $(document).on('click', '.config-language', function(e) {
         var val = e.target.text;
@@ -124,7 +124,25 @@ window.onload = function () {
             value = e.target.value;
         }
         localStorage.setItem(id, value);
-        Source.setConfiguration(e.target.id.split('-')[0], e.target.id.split('-')[1], value);
+        var idParts = e.target.id.split('-');
+        Source.setConfiguration(idParts[0], idParts[1], value);
     });
+
+    $(document).on('click', '.config-dropdown', function(e) {
+        var value = e.target.text;
+        var idParts = e.target.id.split('-');
+        var id = idParts[0] + '-' + idParts[1];
+        localStorage.setItem(id, value);
+        Source.setConfiguration(idParts[0], idParts[1], value);
+        $('#selected-' + id).html(value);
+    });
+
+    $('ul#tabs li:not(#tablist-options)').on('click', function(e) {
+        Source.configureServices();
+    });
+
+    $(document).on('click', '#tablist-editor', function(e) {
+        Source.send();
+    })
 
 };

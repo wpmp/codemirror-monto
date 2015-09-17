@@ -50,7 +50,7 @@ var Sink = (function () {
         if (parse) {
             var message = JSON.parse(rawMessage.data);
             if (message.product !== undefined) {
-                acceptNewProduct(message);
+                processNewProduct(message);
             } else {
                 acceptNewDiscoverResponse(message);
             }
@@ -65,7 +65,7 @@ var Sink = (function () {
         }
     };
 
-    function acceptNewProduct(product) {
+    function processNewProduct(product) {
         if (product.product === 'tokens' && (product.source !== tokens.source || product.version_id > tokens.version_id)) {
             tokens = product;
             $('#tab-tokens').html(toHtmlString(product));
@@ -185,7 +185,7 @@ var Sink = (function () {
                 var config = localStorage.getItem(id);
                 var value;
                 if (option.type === "number") {
-                    value = (config === null || config === undefined) ? option.default_value : parseInt(config);
+                    value = (config === null || config === undefined || config === '') ? option.default_value : parseInt(config);
                     content += sprintf(
                         '<div>' +
                             '<input type="number" class="config" id="%s" placeholder="%s" min="%s" max="%s" value="%s" > %s' +
@@ -210,19 +210,23 @@ var Sink = (function () {
                         , id, value ? 'checked ' : '', id, option.label
                     );
                 } else if (option.type === "xor") {
-                    value = option.default_value;
+                    value = (config === null || config === undefined || config === '') ? option.default_value : config;
+                    content += sprintf(
+                        '<div class="btn-group">' +
+                            '<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">' +
+                                '<span id="selected-%s">%s</span>' +
+                                '<span class="caret"></span>' +
+                            '</button>' +
+                            '<ul id="%s-options" class="dropdown-menu">'
+                        , id, value, id
+                    );
                     option.values.forEach(function (xorOption) {
-                        if (((config === null || config === undefined || config === '') && option.default_value === xorOption) || (config === xorOption)) {
-                            value = xorOption;
-                        }
                         content += sprintf(
-                            '<div class="radio radio-primary">' +
-                                '<input type="radio" class="config styled" id="%s-%s" name="%s" %s value="%s">' +
-                                '<label for="%s-%s">%s</label>' +
-                            '</div>'
-                            , id, xorOption, id, (((config === null || config === undefined || config === '') && option.default_value === xorOption) || (config === xorOption)) ? 'checked ' : '', xorOption, id, xorOption, xorOption
+                            '<li><a href="#" id="%s-%s" class="config-dropdown %s-option">%s</a></li>'
+                            , id, xorOption, id, xorOption
                         );
                     });
+                    content += '</ul></div>';
                 } else if (option.type === undefined && option.members !== undefined) {
                     content += parseConfigurationOptions(option.members, service, serviceConfig);
                 }
