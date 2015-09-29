@@ -201,58 +201,18 @@ var Sink = (function () {
                 }
                 if (option.type === "number") {
                     value = (config === null || config === undefined || config === '') ? option.default_value : parseInt(config);
-                    localStorage.setItem(id, value);
-                    content += sprintf(
-                        '<div>' +
-                            '<input type="number" class="config" id="%s" placeholder="%s" min="%s" max="%s" value="%s" %s> %s' +
-                        '</div>'
-                        , id, option.default_value, option.from, option.to, value, disabled, option.label
-                    );
+                    content += buildNumberOption(config, option, id, disabled, value);
                 } else if (option.type === "text") {
                     value = (config === null || config === undefined) ? option.default_value : config;
-                    localStorage.setItem(id, value);
-                    content += sprintf(
-                        '<div>' +
-                            '<input type="text" class="config" id="%s" placeholder="%s" value="%s" %s> %s' +
-                        '</div>'
-                        , id, option.default_value, value, disabled, option.label
-                    );
+                    content += buildTextOption(config, option, id, disabled, value);
                 } else if (option.type === "boolean") {
                     value = (config === null || config === undefined) ? option.default_value : 'true' === config;
-                    localStorage.setItem(id, value);
-                    content += sprintf(
-                        '<div class="checkbox checkbox-primary">' +
-                            '<input type="checkbox" class="config styled" id="%s" %s %s>' +
-                            '<label for="%s">%s</label>' +
-                        '</div>'
-                        , id, value ? 'checked ' : '', disabled, id, option.label
-                    );
+                    content += buildBooleanOption(config, option, id, disabled, value);
                 } else if (option.type === "xor") {
                     value = (config === null || config === undefined || config === '') ? option.default_value : config;
-                    localStorage.setItem(id, value);
-                    content += sprintf(
-                        '<div class="btn-group">' +
-                            '<button id="%s" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" %s>' +
-                                '<span id="selected-%s">%s</span>' +
-                                '<span class="caret"></span>' +
-                            '</button>' +
-                            '<ul id="%s-options" class="dropdown-menu">'
-                        , id, disabled, id, value, id
-                    );
-                    option.values.forEach(function (xorOption) {
-                        content += sprintf(
-                            '<li><a href="#" id="%s-%s" class="config-dropdown %s-option">%s</a></li>'
-                            , id, xorOption, id, xorOption
-                        );
-                    });
-                    content += '</ul></div> ' + option.label ;
+                    content += buildXorOption(config, option, id, disabled, value);
                 } else if (option.type === undefined && option.members !== undefined) {
-                    required_options.push(option.required_option)
-                    content += parseConfigurationOptions(option.members, service, serviceConfig, required_options);
-                    var index = required_options.indexOf(option.required_option);
-                    if (index > -1) {
-                        required_options.splice(index, 1);
-                    }
+                    content += buildGroupOption(option, required_options, service, serviceConfig);
                 }
 
                 if (option.type !== undefined && option.members === undefined) {
@@ -264,20 +224,66 @@ var Sink = (function () {
         }
     }
 
-    function buildNumberOption() {
-
+    function buildNumberOption(config, option, id, disabled, value) {
+        localStorage.setItem(id, value);
+        return sprintf(
+            '<div>' +
+            '<input type="number" class="config" id="%s" placeholder="%s" min="%s" max="%s" value="%s" %s> %s' +
+            '</div>'
+            , id, option.default_value, option.from, option.to, value, disabled, option.label
+        );
     }
 
-    function buildTextOption() {
-
+    function buildTextOption(config, option, id, disabled, value) {
+        localStorage.setItem(id, value);
+        return sprintf(
+            '<div>' +
+            '<input type="text" class="config" id="%s" placeholder="%s" value="%s" %s> %s' +
+            '</div>'
+            , id, option.default_value, value, disabled, option.label
+        );
     }
 
-    function buildBooleanOption() {
-
+    function buildBooleanOption(config, option, id, disabled, value) {
+        localStorage.setItem(id, value);
+        return sprintf(
+            '<div class="checkbox checkbox-primary">' +
+            '<input type="checkbox" class="config styled" id="%s" %s %s>' +
+            '<label for="%s">%s</label>' +
+            '</div>'
+            , id, value ? 'checked ' : '', disabled, id, option.label
+        );
     }
 
-    function buildXorOption() {
+    function buildXorOption(config, option, id, disabled, value) {
+        localStorage.setItem(id, value);
+        var content = sprintf(
+            '<div class="btn-group">' +
+            '<button id="%s" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" %s>' +
+            '<span id="selected-%s">%s</span>' +
+            '<span class="caret"></span>' +
+            '</button>' +
+            '<ul id="%s-options" class="dropdown-menu">'
+            , id, disabled, id, value, id
+        );
+        option.values.forEach(function (xorOption, value) {
+            content += sprintf(
+                '<li><a href="#" id="%s-%s" class="config-dropdown %s-option">%s</a></li>'
+                , id, xorOption, id, xorOption
+            );
+        });
+        content += '</ul></div> ' + option.label ;
+        return content;
+    }
 
+    function buildGroupOption(option, required_options, service, serviceConfig) {
+        required_options.push(option.required_option)
+        var content = parseConfigurationOptions(option.members, service, serviceConfig, required_options);
+        var index = required_options.indexOf(option.required_option);
+        if (index > -1) {
+            required_options.splice(index, 1);
+        }
+        return content;
     }
 
     return {
