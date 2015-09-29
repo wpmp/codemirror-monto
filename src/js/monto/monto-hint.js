@@ -16,7 +16,7 @@
 
     CodeMirror.registerHelper('hint', 'monto', function (editor, options) {
         var list = [];
-        var contents = JSON.parse(Sink.getCodeCompletion().contents);
+        var contents = Sink.getCodeCompletion().contents;
         var replacementLength = contents[0].description.split(' ')[1].length - contents[0].replacement.length;
         var pos = Source.convertMontoToCMPosWithLength({offset: contents[0].insertionOffset - replacementLength, length: replacementLength});
         contents.forEach(function (content) {

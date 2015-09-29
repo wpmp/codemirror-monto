@@ -26,7 +26,7 @@
                     markers.forEach(function (marker) {
                         marker.clear();
                     });
-                    var contents = JSON.parse(Sink.getTokens().contents);
+                    var contents = Sink.getTokens().contents;
                     contents.forEach(function (content) {
                         var pos = Source.convertMontoToCMPosWithLength({
                             offset: content.offset,
@@ -39,7 +39,7 @@
                     });
                 });
             } else if (newProduct.product === 'outline') {
-                $('#outline').html(refreshOutline(JSON.parse(newProduct.contents).children));
+                $('#outline').html(refreshOutline(newProduct.contents.children));
             }
         });
 

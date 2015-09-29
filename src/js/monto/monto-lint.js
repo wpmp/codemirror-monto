@@ -21,7 +21,7 @@
         if (product.language !== version.language) {
             return [];
         }
-        var contents = JSON.parse(product.contents !== undefined ? product.contents : '[]');
+        var contents = product.contents !== undefined ? product.contents : '[]';
         contents.forEach(function (content) {
             var position = Source.convertMontoToCMPosWithLength({offset: content.offset, length: content.length});
             list.push({
