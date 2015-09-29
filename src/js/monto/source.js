@@ -19,16 +19,6 @@ var Source = (function () {
         return '<pre>' + JSON.stringify(content, null, 2).replace('<', '&lt').replace('>', '&gt') + '</pre>';
     }
 
-    function arrayToHtmlString(content) {
-        var copy = $.extend(true, [], content);
-        copy.forEach(function (e) {
-            if (e.configurations !== undefined && e.options !== null) {
-                e.configurations = JSON.parse(e.configurations);
-            }
-        });
-        return '<pre>' + JSON.stringify(copy, null, 2).replace('<', '&lt').replace('>', '&gt') + '</pre>';
-    }
-
     return {
         getLineSizes: function () {
             return lineSizes;
@@ -83,11 +73,8 @@ var Source = (function () {
         },
         configureServices: function () {
             var copy = $.extend(true, [], configuration);
-            copy.forEach(function (c) {
-                c.configurations = JSON.stringify(c.configurations);
-            });
             src.send(JSON.stringify(copy));
-            $('#tab-configuration').html(arrayToHtmlString(copy));
+            $('#tab-configuration').html(toHtmlString(copy));
         },
         setPosAndSend: function () {
             var editor = $('.CodeMirror')[0].CodeMirror;

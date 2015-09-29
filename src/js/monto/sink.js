@@ -26,24 +26,7 @@ var Sink = (function () {
     };
 
     function toHtmlString(content) {
-        var copy = $.extend(true, {}, content);
-        if (copy.contents !== undefined && copy.contents !== null) {
-            copy.contents = JSON.parse(copy.contents);
-        }
-        return sprintf('<pre>%s</pre>', JSON.stringify(copy, null, 2).replace('<', '&lt').replace('>', '&gt'));
-    }
-
-    function arrayToHtmlString(content) {
-        var copy = $.extend(true, [], content);
-        copy.forEach(function (e) {
-            if (e.options !== undefined && e.options !== null) {
-                e.options = JSON.parse(e.options);
-            }
-            if (e.configurations !== undefined && e.configurations !== null) {
-                e.configurations = JSON.parse(e.configurations);
-            }
-        });
-        return sprintf('<pre>%s</pre>', JSON.stringify(copy, null, 2).replace('<', '&lt').replace('>', '&gt'));
+        return sprintf('<pre>%s</pre>', JSON.stringify(content, null, 2).replace('<', '&lt').replace('>', '&gt'));
     }
 
     sink.onmessage = function (rawMessage) {
@@ -88,7 +71,7 @@ var Sink = (function () {
     }
 
     function acceptNewDiscoverResponse(response) {
-        $('#discoverResponse').html(arrayToHtmlString(response));
+        $('#discoverResponse').html(toHtmlString(response));
         discoverResponse = response;
 
         languages.forEach(function (language) {
@@ -168,7 +151,7 @@ var Sink = (function () {
         availableServices.forEach(function (service) {
             var panel = $('#options-' + service.service_id);
             var serviceConfig = [];
-            var content = parseConfigurationOptions(JSON.parse(service.options), service, serviceConfig, []);
+            var content = parseConfigurationOptions(service.options, service, serviceConfig, []);
             if (panel.length === 0) {
                 $('#options').append(content);
             }
