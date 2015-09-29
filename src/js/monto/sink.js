@@ -168,7 +168,7 @@ var Sink = (function () {
         availableServices.forEach(function (service) {
             var panel = $('#options-' + service.service_id);
             var serviceConfig = [];
-            var content = parseConfigurationOptions(JSON.parse(service.options), service, serviceConfig);
+            var content = parseConfigurationOptions(JSON.parse(service.options), service, serviceConfig, []);
             if (panel.length === 0) {
                 $('#options').append(content);
             }
@@ -177,48 +177,67 @@ var Sink = (function () {
         Source.setConfigurationMessage(configMsg);
     }
 
-    function parseConfigurationOptions(options, service, serviceConfig) {
+    function parseConfigurationOptions(options, service, serviceConfig, required_options) {
         if (options !== undefined && options !== null) {
-            var content = '<div id="options-' + service.service_id + '">';
+            var content = '<div id="options-' + service.service_id + '" class="panel panel-primary panel-default cm-s-monto"><div class="panel-body">';
             options.forEach(function (option) {
                 var id = service.service_id + '-' + option.option_id;
                 var config = localStorage.getItem(id);
                 var value;
+                var disabled = '';
+                if (required_options !== null && required_options !== undefined && required_options.length > 0) {
+                    var acc = true;
+                    required_options.forEach(function(required_option) {
+                        acc = 'true' === localStorage.getItem(service.service_id + '-' + required_option) && acc;
+                        $(document).on('change', '#' + service.service_id + '-' + required_option, function (e) {
+                            if (e.target.checked) {
+                                $('#' + id).prop('disabled', false);
+                            } else {
+                                $('#' + id).prop('disabled', true);
+                            }
+                        });
+                    });
+                    disabled = acc ? '' : 'disabled';
+                }
                 if (option.type === "number") {
                     value = (config === null || config === undefined || config === '') ? option.default_value : parseInt(config);
+                    localStorage.setItem(id, value);
                     content += sprintf(
                         '<div>' +
-                            '<input type="number" class="config" id="%s" placeholder="%s" min="%s" max="%s" value="%s" > %s' +
+                            '<input type="number" class="config" id="%s" placeholder="%s" min="%s" max="%s" value="%s" %s> %s' +
                         '</div>'
-                        , id, option.default_value, option.from, option.to, value, option.label
+                        , id, option.default_value, option.from, option.to, value, disabled, option.label
                     );
                 } else if (option.type === "text") {
                     value = (config === null || config === undefined) ? option.default_value : config;
+                    localStorage.setItem(id, value);
                     content += sprintf(
                         '<div>' +
-                            '<input type="text" class="config" id="%s" placeholder="%s" value="%s"> %s' +
+                            '<input type="text" class="config" id="%s" placeholder="%s" value="%s" %s> %s' +
                         '</div>'
-                        , id, option.default_value, value, option.label
+                        , id, option.default_value, value, disabled, option.label
                     );
                 } else if (option.type === "boolean") {
-                    value = (((config === null || config === undefined) && option.default_value) || Boolean(config));
-                        content += sprintf(
+                    value = (config === null || config === undefined) ? option.default_value : 'true' === config;
+                    localStorage.setItem(id, value);
+                    content += sprintf(
                         '<div class="checkbox checkbox-primary">' +
-                            '<input type="checkbox" class="config styled" id="%s" %s>' +
+                            '<input type="checkbox" class="config styled" id="%s" %s %s>' +
                             '<label for="%s">%s</label>' +
                         '</div>'
-                        , id, value ? 'checked ' : '', id, option.label
+                        , id, value ? 'checked ' : '', disabled, id, option.label
                     );
                 } else if (option.type === "xor") {
                     value = (config === null || config === undefined || config === '') ? option.default_value : config;
+                    localStorage.setItem(id, value);
                     content += sprintf(
                         '<div class="btn-group">' +
-                            '<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">' +
+                            '<button id="%s" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" %s>' +
                                 '<span id="selected-%s">%s</span>' +
                                 '<span class="caret"></span>' +
                             '</button>' +
                             '<ul id="%s-options" class="dropdown-menu">'
-                        , id, value, id
+                        , id, disabled, id, value, id
                     );
                     option.values.forEach(function (xorOption) {
                         content += sprintf(
@@ -226,16 +245,21 @@ var Sink = (function () {
                             , id, xorOption, id, xorOption
                         );
                     });
-                    content += '</ul></div>';
+                    content += '</ul></div> ' + option.label ;
                 } else if (option.type === undefined && option.members !== undefined) {
-                    content += parseConfigurationOptions(option.members, service, serviceConfig);
+                    required_options.push(option.required_option)
+                    content += parseConfigurationOptions(option.members, service, serviceConfig, required_options);
+                    var index = required_options.indexOf(option.required_option);
+                    if (index > -1) {
+                        required_options.splice(index, 1);
+                    }
                 }
 
                 if (option.type !== undefined && option.members === undefined) {
                     serviceConfig.push({option_id: option.option_id, value: value});
                 }
             });
-            content += '</div>';
+            content += '</div></div>';
             return content;
         }
     }
