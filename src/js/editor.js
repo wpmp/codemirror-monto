@@ -145,4 +145,8 @@ window.onload = function () {
         Source.send();
     })
 
+    $(document).on('click', '.editor-language', function(e) {
+        Source.send();
+    })
+
 };
