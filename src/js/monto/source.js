@@ -11,9 +11,17 @@ var Source = (function () {
         selections: []
     };
 
-    var discoverReq = [];
+    var discoverReq = {
+        discover_services: [
+            {
+                language: "javascript"
+            }
+        ]
+    };
 
-    var configuration = [];
+    var configuration = {
+        configure_services: []
+    };
 
     function toHtmlString(content) {
         return '<pre>' + JSON.stringify(content, null, 2).replace('<', '&lt').replace('>', '&gt') + '</pre>';
@@ -61,7 +69,7 @@ var Source = (function () {
             configuration = value;
         },
         setConfiguration: function (serviceID, optionID, value) {
-            configuration.forEach(function(service) {
+            configuration.configure_services.forEach(function(service) {
                 if (service.service_id === serviceID) {
                     service.configurations.forEach(function (config) {
                         if (config.option_id === optionID) {
@@ -72,9 +80,8 @@ var Source = (function () {
             });
         },
         configureServices: function () {
-            var copy = $.extend(true, [], configuration);
-            src.send(JSON.stringify(copy));
-            $('#tab-configuration').html(toHtmlString(copy));
+            src.send(JSON.stringify(configuration));
+            $('#tab-configuration').html(toHtmlString(configuration));
         },
         setPosAndSend: function () {
             var editor = $('.CodeMirror')[0].CodeMirror;

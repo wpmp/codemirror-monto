@@ -96,12 +96,12 @@ var Sink = (function () {
             if (!foundServices.indexOf(service) > -1) {
                 $('#row-' + service.service_id).remove();
                 var serviceIndex = -1;
-                configMsg.forEach(function (config, index) {
+                configMsg.configure_services.forEach(function (config, index) {
                     if (config.service_id === service.service_id) {
                         serviceIndex = index;
                     }
                 });
-                configMsg.splice(serviceIndex, 1);
+                configMsg.configure_services.splice(serviceIndex, 1);
             }
         });
         Source.setConfigurationMessage(configMsg);
@@ -155,7 +155,7 @@ var Sink = (function () {
             if (panel.length === 0) {
                 $('#options').append(content);
             }
-            configMsg.push({service_id : service.service_id, configurations : serviceConfig});
+            configMsg.configure_services.push({service_id : service.service_id, configurations : serviceConfig});
         });
         Source.setConfigurationMessage(configMsg);
     }
