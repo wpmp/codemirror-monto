@@ -12,11 +12,7 @@ var Source = (function () {
     };
 
     var discoverReq = {
-        discover_services: [
-            {
-                language: "javascript"
-            }
-        ]
+        discover_services: []
     };
 
     var configuration = {
