@@ -1,26 +1,30 @@
 (function (mod) {
-    if (typeof exports == "object" && typeof module == "object") // CommonJS
-        mod(require("../../lib/codemirror"));
-    else if (typeof define == "function" && define.amd) // AMD
-        define(["../../lib/codemirror"], mod);
-    else // Plain browser env
-        mod(CodeMirror);
+    mod(CodeMirror);
 })(function (CodeMirror) {
     "use strict";
 
-    Sink.registerFunctionOnReceive(function (newProduct) {
-        if (newProduct.product === 'completions') {
-            CodeMirror.commands.autocomplete($('.CodeMirror')[0].CodeMirror);
-        }
+    Sink.onTypeTriggerFunction('completions', function () {
+        CodeMirror.commands.autocomplete($('.CodeMirror')[0].CodeMirror);
     });
 
     CodeMirror.registerHelper('hint', 'monto', function (editor, options) {
         var list = [];
-        var contents = Sink.getCodeCompletion().contents;
-        var replacementLength = contents[0].description.split(' ')[1].length - contents[0].replacement.length;
-        var pos = Source.convertMontoToCMPosWithLength({offset: contents[0].insertionOffset - replacementLength, length: replacementLength});
-        contents.forEach(function (content) {
-            list.push(content.description.split(' ')[1]);
+        var completions = Sink.getActiveProductsByType("completions");
+        if (completions === undefined || completions === null || completions.length === 0) {
+            return {
+                list: []
+            };
+        }
+        var replacementLength = completions[0].contents[0].description.split(' ')[1].length - completions[0].contents[0].replacement.length;
+        var pos = Source.convertMontoToCMPosWithLength({
+            offset: completions[0].contents[0].insertionOffset - replacementLength,
+            length: replacementLength
+        });
+        completions.forEach(function (completion) {
+            var contents = completion.contents;
+            contents.forEach(function (content) {
+                list.push(content.description.split(' ')[1]);
+            });
         });
         return {
             list: list,

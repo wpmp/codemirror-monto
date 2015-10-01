@@ -78,12 +78,18 @@ window.onload = function () {
         $(this).tab('show');
     });
 
+    $(document).on('click', '.product-tab', function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+
     $(document).on('change', '.discoverOption', function (e) {
         if (this.checked) {
             Sink.enableService(this.id);
         } else {
             Sink.disableService(this.id);
         }
+        Sink.triggerAll();
     });
 
     var editorLang = localStorage.getItem('editor-language');
@@ -109,7 +115,6 @@ window.onload = function () {
     });
 
     setTimeout(function () {
-        //TODO probably make this more safe
         $('#discover').trigger('click');
     }, 100);
 
@@ -143,10 +148,10 @@ window.onload = function () {
 
     $(document).on('click', '#tablist-editor', function(e) {
         Source.send();
-    })
+    });
 
     $(document).on('click', '.editor-language', function(e) {
+        Sink.triggerAll();
         Source.send();
-    })
-
+    });
 };

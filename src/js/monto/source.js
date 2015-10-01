@@ -1,12 +1,13 @@
 var Source = (function () {
     var src = new WebSocket('ws://localhost:5002/');
+
     var lineSizes = [];
 
     var versionMsg = {
         source: 'nofile',
         version_id: 0,
         language: localStorage.getItem('editor-language'),
-        //invalid: [],
+        invalid: [],
         contents: '',
         selections: []
     };
@@ -30,7 +31,7 @@ var Source = (function () {
         getMessage: function () {
             return versionMsg;
         },
-        getConfigurationMessage : function () {
+        getConfigurationMessage: function () {
             return configuration;
         },
         setMessage: function (value) {
@@ -40,6 +41,7 @@ var Source = (function () {
             versionMsg.source = value;
         },
         setMessageLanguage: function (value) {
+            Sink.resetProducts();
             versionMsg.language = value;
         },
         setMessageContents: function (value) {
@@ -65,7 +67,7 @@ var Source = (function () {
             configuration = value;
         },
         setConfiguration: function (serviceID, optionID, value) {
-            configuration.configure_services.forEach(function(service) {
+            configuration.configure_services.forEach(function (service) {
                 if (service.service_id === serviceID) {
                     service.configurations.forEach(function (config) {
                         if (config.option_id === optionID) {
@@ -102,7 +104,6 @@ var Source = (function () {
                         to: {line: i, ch: pos.offset - chCount + pos.length}
                     };
                 }
-                //TODO +1 because of missing \n count ???
                 chCount += lineSizes[i] + 1;
             }
         },
@@ -116,7 +117,6 @@ var Source = (function () {
                         ch: offset - chCount
                     };
                 }
-                //TODO +1 because of missing \n count ???
                 chCount += lineSizes[i] + 1;
             }
         },

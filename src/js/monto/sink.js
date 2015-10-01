@@ -1,29 +1,18 @@
 var Sink = (function () {
     var sink = new WebSocket('ws://localhost:5003/');
-    var receiveEvents = [];
+
     var parse = false;
     var parseService = "";
+    var optionLanguage = 'all';
+
+    var languages = [];
+    var discoverResponse = [];
     var enabledServices = ["discover"];
     var availableServices = [];
-    var languages = [];
-    var optionLanguage = 'all';
-    var discoverResponse = [];
 
-    var tokens = {
-        version_id: -1
-    };
-    var ast = {
-        version_id: -1
-    };
-    var outline = {
-        version_id: -1
-    };
-    var codecompletion = {
-        version_id: -1
-    };
-    var errors = {
-        version_id: -1
-    };
+    var triggerFunction = {};
+
+    var products = {};
 
     function toHtmlString(content) {
         return sprintf('<pre>%s</pre>', JSON.stringify(content, null, 2).replace('<', '&lt').replace('>', '&gt'));
@@ -49,25 +38,49 @@ var Sink = (function () {
     };
 
     function processNewProduct(product) {
-        if (product.product === 'tokens' && (product.source !== tokens.source || product.version_id > tokens.version_id)) {
-            tokens = product;
-            $('#tab-tokens').html(toHtmlString(product));
-        } else if (product.product === 'ast' && (product.source !== ast.source || product.version_id > ast.version_id)) {
-            ast = product;
-            $('#tab-ast').html(toHtmlString(product));
-        } else if (product.product === 'outline' && (product.source !== outline.source || product.version_id > outline.version_id)) {
-            outline = product;
-            $('#tab-outline').html(toHtmlString(product));
-        } else if (product.product === 'completions' && (product.source !== codecompletion.source || product.version_id > codecompletion.version_id)) {
-            codecompletion = product;
-            $('#tab-codecompletion').html(toHtmlString(product));
-        } else if (product.product === 'errors' && (product.source !== errors.source || product.version_id > errors.version_id)) {
-            errors = product;
-            $('#tab-errors').html(toHtmlString(product));
+        product.service_id = parseService;
+        var productForType = products[product.product];
+        if (productForType === undefined || productForType === null) {
+            products[product.product] = [product];
+        } else {
+            var index = -1;
+            for (var i = 0; i < productForType.length; i++) {
+                var existingProduct = productForType[i];
+                if (existingProduct.service_id === product.service_id && (existingProduct.source !== product.source || existingProduct.version_id < product.version_id)) {
+                    index = i;
+                }
+            }
+            if (index > -1) {
+                products[product.product][index] = product;
+            } else {
+                products[product.product].push(product);
+            }
         }
-        receiveEvents.forEach(function (event) {
-            event(product);
-        });
+        var tabID = '#tab-' + product.service_id;
+        if ($(tabID).length > 0) {
+            $(tabID).html(toHtmlString(product));
+        } else {
+            $('#products-tabs').append('<li role="presentation"><a class="product-tab" href="' + tabID + '">' + product.service_id + '</a></li>');
+            $('#products-div').append('<div role="tabpanel" id="tab-' + product.service_id + '" class="tab-pane"></div>');
+        }
+
+        //if (product.product === 'tokens' && (product.source !== tokens.source || product.version_id > tokens.version_id)) {
+        //    tokens = product;
+        //    $('#tab-tokens').html(toHtmlString(product));
+        //} else if (product.product === 'ast' && (product.source !== ast.source || product.version_id > ast.version_id)) {
+        //    ast = product;
+        //    $('#tab-ast').html(toHtmlString(product));
+        //} else if (product.product === 'outline' && (product.source !== outline.source || product.version_id > outline.version_id)) {
+        //    outline = product;
+        //    $('#tab-outline').html(toHtmlString(product));
+        //} else if (product.product === 'completions' && (product.source !== codecompletion.source || product.version_id > codecompletion.version_id)) {
+        //    codecompletion = product;
+        //    $('#tab-codecompletion').html(toHtmlString(product));
+        //} else if (product.product === 'errors' && (product.source !== errors.source || product.version_id > errors.version_id)) {
+        //    errors = product;
+        //    $('#tab-errors').html(toHtmlString(product));
+        //}
+        Sink.trigger(product.product);
     }
 
     function acceptNewDiscoverResponse(response) {
@@ -126,18 +139,18 @@ var Sink = (function () {
                     }
                     $('#services').append(sprintf(
                         '<tr id="row-%s">' +
-                            '<td class="mid-align">' +
-                                '<div class="checkbox checkbox-primary">' +
-                                    '<input id="%s" type="checkbox" class="discoverOption styled" %s>' +
-                                    '<label for="%s">%s</label>' +
-                                '</div>' +
-                            '</td>' +
-                            '<td class="mid-align">%s</td>' +
-                            '<td class="mid-align">%s</td>' +
-                            '<td class="mid-align">%s</td>' +
-                            '<td class="mid-align">%s</td>' +
+                        '<td class="mid-align">' +
+                        '<div class="checkbox checkbox-primary">' +
+                        '<input id="%s" type="checkbox" class="discoverOption styled" %s>' +
+                        '<label for="%s">%s</label>' +
+                        '</div>' +
+                        '</td>' +
+                        '<td class="mid-align">%s</td>' +
+                        '<td class="mid-align">%s</td>' +
+                        '<td class="mid-align">%s</td>' +
+                        '<td class="mid-align">%s</td>' +
                         '</tr>'
-                        ,service.service_id, service.service_id, checked, service.service_id, service.service_id,
+                        , service.service_id, service.service_id, checked, service.service_id, service.service_id,
                         service.label, service.description, service.language, service.product));
                 }
             } else {
@@ -155,7 +168,7 @@ var Sink = (function () {
             if (panel.length === 0) {
                 $('#options').append(content);
             }
-            configMsg.configure_services.push({service_id : service.service_id, configurations : serviceConfig});
+            configMsg.configure_services.push({service_id: service.service_id, configurations: serviceConfig});
         });
         Source.setConfigurationMessage(configMsg);
     }
@@ -170,7 +183,7 @@ var Sink = (function () {
                 var disabled = '';
                 if (required_options !== null && required_options !== undefined && required_options.length > 0) {
                     var acc = true;
-                    required_options.forEach(function(required_option) {
+                    required_options.forEach(function (required_option) {
                         acc = 'true' === localStorage.getItem(service.service_id + '-' + required_option) && acc;
                         $(document).on('change', '#' + service.service_id + '-' + required_option, function (e) {
                             if (e.target.checked) {
@@ -255,12 +268,12 @@ var Sink = (function () {
                 , id, xorOption, id, xorOption
             );
         });
-        content += '</ul></div> ' + option.label ;
+        content += '</ul></div> ' + option.label;
         return content;
     }
 
     function buildGroupOption(option, required_options, service, serviceConfig) {
-        required_options.push(option.required_option)
+        required_options.push(option.required_option);
         var content = parseConfigurationOptions(option.members, service, serviceConfig, required_options);
         var index = required_options.indexOf(option.required_option);
         if (index > -1) {
@@ -270,23 +283,61 @@ var Sink = (function () {
     }
 
     return {
-        getTokens: function () {
-            return tokens;
+        getProducts: function () {
+            return products;
         },
-        getAst: function () {
-            return ast;
+        getProductsByType: function (type) {
+            return products[type];
         },
-        getOutline: function () {
-            return outline;
+        getActiveProductsByType: function (type) {
+            var enabledProductsByType = [];
+            var productsByType = products[type];
+            if (productsByType === undefined || productsByType === null) {
+                return [];
+            }
+            productsByType.forEach(function (product) {
+                if (enabledServices.indexOf(product.service_id) > -1 && product.language === Source.getMessage().language) {
+                    enabledProductsByType.push(product);
+                }
+            });
+            return enabledProductsByType;
         },
-        getCodeCompletion: function () {
-            return codecompletion;
+        getProductByServiceID: function (serviceID) {
+            for (var i in products) {
+                for (var j in products[i]) {
+                    if (products[i][j].service_id === serviceID) {
+                        return products[i][j];
+                    }
+                }
+            }
+            return null;
         },
-        getErrors: function () {
-            return errors;
+        resetProducts: function () {
+            products = {};
         },
-        registerFunctionOnReceive: function (func) {
-            receiveEvents.push(func)
+        onTypeTriggerFunction: function (productType, func) {
+            var list = triggerFunction[productType];
+            if (list === undefined || list === null) {
+                triggerFunction[productType] = [func];
+            } else {
+                triggerFunction[productType].push(func);
+            }
+        },
+        trigger: function (productType) {
+            var list = triggerFunction[productType];
+            if (list === undefined || list === null) {
+                return;
+            }
+            triggerFunction[productType].forEach(function (func) {
+                func();
+            });
+        },
+        triggerAll: function () {
+            for (var product in triggerFunction) {
+                triggerFunction[product].forEach(function (func) {
+                    func();
+                });
+            }
         },
         setOptionsLanguage: function (language) {
             optionLanguage = language;

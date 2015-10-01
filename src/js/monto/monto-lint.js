@@ -1,34 +1,28 @@
 (function (mod) {
-    if (typeof exports == "object" && typeof module == "object") // CommonJS
-        mod(require("../../lib/codemirror"));
-    else if (typeof define == "function" && define.amd) // AMD
-        define(["../../lib/codemirror"], mod);
-    else // Plain browser env
-        mod(CodeMirror);
+    mod(CodeMirror);
 })(function (CodeMirror) {
     "use strict";
 
-    Sink.registerFunctionOnReceive(function (newProduct) {
-        if (newProduct.product === 'errors') {
-            $('.CodeMirror')[0].CodeMirror.performLint();
-        }
+    Sink.onTypeTriggerFunction('errors', function () {
+        $('.CodeMirror')[0].CodeMirror.performLint();
     });
 
     CodeMirror.registerHelper("lint", "monto", function (text) {
         var list = [];
-        var product = Sink.getErrors();
-        var version = Source.getMessage();
-        if (product.language !== version.language) {
+        var errors = Sink.getActiveProductsByType("errors");
+        if (errors === undefined || errors === null) {
             return [];
         }
-        var contents = product.contents !== undefined ? product.contents : '[]';
-        contents.forEach(function (content) {
-            var position = Source.convertMontoToCMPosWithLength({offset: content.offset, length: content.length});
-            list.push({
-                message: content.description,
-                severity: content.level,
-                from: position.from,
-                to: position.to
+        errors.forEach(function (product) {
+            var contents = product.contents !== undefined ? product.contents : '[]';
+            contents.forEach(function (content) {
+                var position = Source.convertMontoToCMPosWithLength({offset: content.offset, length: content.length});
+                list.push({
+                    message: content.description,
+                    severity: content.level,
+                    from: position.from,
+                    to: position.to
+                });
             });
         });
         return list;

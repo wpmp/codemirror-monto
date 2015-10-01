@@ -20,13 +20,14 @@
             Source.send();
         });
 
-        Sink.registerFunctionOnReceive(function (newProduct) {
-            if (newProduct.product === 'tokens') {
-                editor.operation(function () {
-                    markers.forEach(function (marker) {
-                        marker.clear();
-                    });
-                    var contents = Sink.getTokens().contents;
+        Sink.onTypeTriggerFunction('tokens', function () {
+            editor.operation(function () {
+                markers.forEach(function (marker) {
+                    marker.clear();
+                });
+                var tokens = Sink.getActiveProductsByType("tokens");
+                tokens.forEach(function (product) {
+                    var contents = product.contents;
                     contents.forEach(function (content) {
                         var pos = Source.convertMontoToCMPosWithLength({
                             offset: content.offset,
@@ -38,9 +39,16 @@
                         }, {className: 'cm-' + content.category}));
                     });
                 });
-            } else if (newProduct.product === 'outline') {
-                $('#outline').html(refreshOutline(newProduct.contents.children));
-            }
+            });
+        });
+
+        Sink.onTypeTriggerFunction('outline', function () {
+            var content = '';
+            var outlines = Sink.getActiveProductsByType('outline');
+            outlines.forEach(function (product) {
+                content += refreshOutline(product.contents[0].children)
+            });
+            $('#outline').html(content);
         });
 
         function refreshOutline(children) {
