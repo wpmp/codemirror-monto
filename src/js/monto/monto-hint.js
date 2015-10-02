@@ -10,7 +10,7 @@
     CodeMirror.registerHelper('hint', 'monto', function (editor, options) {
         var list = [];
         var completions = Sink.getActiveProductsByType("completions");
-        if (completions === undefined || completions === null || completions.length === 0) {
+        if (completions === undefined || completions === null || completions.length === 0 || completions[0].contents.length === 0) {
             return {
                 list: []
             };

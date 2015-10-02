@@ -296,7 +296,13 @@ var Sink = (function () {
                 return [];
             }
             productsByType.forEach(function (product) {
-                if (enabledServices.indexOf(product.service_id) > -1 && product.language === Source.getMessage().language) {
+                var serviceAvailable = false;
+                availableServices.forEach(function (service) {
+                    if (service.service_id === product.service_id) {
+                        serviceAvailable = true;
+                    }
+                });
+                if (serviceAvailable && enabledServices.indexOf(product.service_id) > -1 && product.language === Source.getMessage().language) {
                     enabledProductsByType.push(product);
                 }
             });
