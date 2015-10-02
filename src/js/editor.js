@@ -23,7 +23,7 @@ window.onload = function () {
     });
 
     function save() {
-        saveAs(new Blob([editor.getValue()], {type:"text/plain;charset=utf-8"}), Source.getMessage().source);
+        saveAs(new Blob([editor.getValue()], {type: "text/plain;charset=utf-8"}), Source.getMessage().source);
     }
 
     CodeMirror.commands.save = save;
@@ -60,7 +60,6 @@ window.onload = function () {
                 var text = reader.result;
                 editor.setValue(text);
             };
-            // TODO fire change on editor, probably bug?
             reader.readAsText(file);
             $('#file-name').html(file.name);
         } else {
@@ -107,7 +106,7 @@ window.onload = function () {
     $('#selected-config-language').html(configLang !== null && configLang !== undefined && configLang !== '' ? configLang : 'all');
     Sink.setOptionsLanguage(configLang !== null && configLang !== undefined && configLang !== '' ? configLang : 'all');
 
-    $(document).on('click', '.config-language', function(e) {
+    $(document).on('click', '.config-language', function (e) {
         var val = e.target.text;
         Sink.setOptionsLanguage(val);
         localStorage.setItem("config-language", val);
@@ -118,7 +117,7 @@ window.onload = function () {
         $('#discover').trigger('click');
     }, 100);
 
-    $(document).on('change', '.config', function(e) {
+    $(document).on('change', '.config', function (e) {
         var id = (e.target.type === 'radio' ? e.target.name : e.target.id);
         var value = '';
         if (e.target.type === 'checkbox') {
@@ -133,7 +132,7 @@ window.onload = function () {
         Source.setConfiguration(idParts[0], idParts[1], value);
     });
 
-    $(document).on('click', '.config-dropdown', function(e) {
+    $(document).on('click', '.config-dropdown', function (e) {
         var value = e.target.text;
         var idParts = e.target.id.split('-');
         var id = idParts[0] + '-' + idParts[1];
@@ -142,15 +141,15 @@ window.onload = function () {
         $('#selected-' + id).html(value);
     });
 
-    $('ul#tabs li:not(#tablist-options)').on('click', function(e) {
+    $('ul#tabs li:not(#tablist-options)').on('click', function (e) {
         Source.configureServices();
     });
 
-    $(document).on('click', '#tablist-editor', function(e) {
+    $(document).on('click', '#tablist-editor', function (e) {
         Source.send();
     });
 
-    $(document).on('click', '.editor-language', function(e) {
+    $(document).on('click', '.editor-language', function (e) {
         Sink.triggerAll();
         Source.send();
     });
